@@ -25,17 +25,33 @@
 package org.spongepowered.downloads;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import graphql.ExecutionInput;
 import graphql.GraphQL;
 import graphql.schema.GraphQLSchema;
+import org.spongepowered.downloads.config.AppConfig;
 import org.spongepowered.downloads.graphql.GraphQLRequest;
+import org.spongepowered.downloads.guice.InjectorModule;
 import spark.Spark;
 
-public class App {
-    private final Gson gson;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-    App() {
+public class App {
+
+    private static final String CONFIG_LOCATION = "appconfig.json";
+
+    private final Gson gson;
+    private final Injector injector;
+
+    App() throws Exception {
         this.gson = new Gson();
+        this.injector = Guice.createInjector(new InjectorModule(this.gson, load(this.gson)));
     }
 
     /**
@@ -44,7 +60,14 @@ public class App {
      * @param args entrypoint args
      */
     public static void main(final String[] args) {
-        final App app = new App();
+        final App app;
+        try {
+            app = new App();
+        } catch (Exception e) {
+            Logger.getGlobal().log(Level.SEVERE, "Unable to start server: {}", e.getMessage());
+            e.printStackTrace(System.err);
+            return;
+        }
         Spark.post("/graphql", (request, response) -> {
             response.type("application/json");
             final String body = request.body();
@@ -60,4 +83,27 @@ public class App {
             return graphQL.execute(builder);
         });
     }
+
+    /**
+     * Loads the file and populates a new {@link AppConfig}.
+     *
+     * @param gson The {@link Gson} instance to use to load the config
+     * @return The {@link AppConfig}
+     * @throws IOException if the file could not be loaded
+     * @throws JsonSyntaxException if the file does not contain valid Json
+     */
+    public static AppConfig load(Gson gson) throws IOException, JsonSyntaxException {
+        final var configPath = Path.of(CONFIG_LOCATION);
+        if (Files.notExists(configPath)) {
+            // Copy the default config to the current directory.
+            try (var inputStream = AppConfig.class.getResourceAsStream("/appconfig.json")) {
+                Files.copy(inputStream, configPath);
+            }
+        }
+
+        try (var configFileStream = Files.newBufferedReader(configPath)) {
+            return gson.fromJson(configFileStream, AppConfig.class);
+        }
+    }
+
 }

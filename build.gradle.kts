@@ -20,6 +20,11 @@ dependencies {
     implementation("com.graphql-java:graphql-java:15.0")
     implementation("com.sparkjava:spark-core:2.8.0")
     implementation("com.google.code.gson:gson:2.8.6")
+    implementation("com.google.inject:guice:4.2.3")
+
+    // Database handling
+    implementation("com.zaxxer:HikariCP:3.4.5")
+    implementation("org.postgresql:postgresql:42.2.14")
 
     testImplementation("junit:junit:4.12")
     testImplementation("org.mockito:mockito-core:3.3.3")
@@ -38,6 +43,7 @@ application {
 checkstyle {
 
 }
+
 val organization: String by project
 val url: String by project
 
