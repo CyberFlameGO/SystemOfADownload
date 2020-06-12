@@ -21,6 +21,7 @@ dependencies {
     implementation("com.sparkjava:spark-core:2.8.0")
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("com.google.inject:guice:4.2.3")
+    implementation("org.slf4j:slf4j-simple:1.7.9")
 
     // Database handling
     implementation("com.zaxxer:HikariCP:3.4.5")

@@ -46,6 +46,7 @@ public class AppConfig {
     public static class Database {
 
         private String jdbcUrl;
+        private boolean useDummy;
 
         /**
          * Gets the JDBC Url.
@@ -56,6 +57,14 @@ public class AppConfig {
             return this.jdbcUrl;
         }
 
+        /**
+         * Use a dummy database, for testing without a DB.
+         *
+         * @return Whether to use a dummy DB
+         */
+        public boolean isUseDummy() {
+            return this.useDummy;
+        }
     }
 
 }

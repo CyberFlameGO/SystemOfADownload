@@ -34,8 +34,12 @@ import org.spongepowered.downloads.buisness.impl.UploadProcessorImpl;
 import org.spongepowered.downloads.config.AppConfig;
 import org.spongepowered.downloads.database.DatabaseConnectionPool;
 import org.spongepowered.downloads.database.DatabasePersistence;
+import org.spongepowered.downloads.database.dummyimpl.DummyDatabaseConnectionPool;
+import org.spongepowered.downloads.database.dummyimpl.DummyDatabasePersistence;
 import org.spongepowered.downloads.database.impl.HikariDatabaseConnectionPool;
 import org.spongepowered.downloads.database.impl.PostgresDatabasePersistence;
+import org.spongepowered.downloads.graphql.GraphQLRoutes;
+import org.spongepowered.downloads.rest.v1.RESTRoutesV1;
 
 /**
  * Contains all the Guice bindings
@@ -60,10 +64,17 @@ public class InjectorModule extends AbstractModule {
     protected void configure() {
         bind(Gson.class).toInstance(this.gson);
         bind(AppConfig.class).toInstance(this.appConfig);
-        bind(DatabaseConnectionPool.class).toInstance(new HikariDatabaseConnectionPool(this.appConfig.getDatabaseConfig()));
-        bind(DatabasePersistence.class).to(PostgresDatabasePersistence.class).in(Singleton.class);
+        if (this.appConfig.getDatabaseConfig().isUseDummy()) {
+            bind(DatabaseConnectionPool.class).to(DummyDatabaseConnectionPool.class).in(Singleton.class);
+            bind(DatabasePersistence.class).to(DummyDatabasePersistence.class).in(Singleton.class);
+        } else {
+            bind(DatabaseConnectionPool.class).toInstance(new HikariDatabaseConnectionPool(this.appConfig.getDatabaseConfig()));
+            bind(DatabasePersistence.class).to(PostgresDatabasePersistence.class).in(Singleton.class);
+        }
         bind(MetadataDownload.class).to(MetadataDownloadImpl.class).in(Singleton.class);
         bind(UploadProcessor.class).to(UploadProcessorImpl.class).in(Singleton.class);
+        bind(RESTRoutesV1.class).in(Singleton.class);
+        bind(GraphQLRoutes.class).in(Singleton.class);
     }
 
 }

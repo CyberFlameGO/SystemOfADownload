@@ -1,5 +1,6 @@
 {
     "database": {
+        "useDummy": true,
         "jdbcUrl": "jdbc:postgresql://localhost/test"
     }
 }

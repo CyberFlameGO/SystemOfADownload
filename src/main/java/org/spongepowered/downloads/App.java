@@ -28,12 +28,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import graphql.ExecutionInput;
-import graphql.GraphQL;
-import graphql.schema.GraphQLSchema;
 import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.graphql.GraphQLRequest;
+import org.spongepowered.downloads.database.DatabaseConnectionPool;
+import org.spongepowered.downloads.graphql.GraphQLRoutes;
 import org.spongepowered.downloads.guice.InjectorModule;
+import org.spongepowered.downloads.rest.v1.RESTRoutesV1;
 import spark.Spark;
 
 import java.io.IOException;
@@ -48,10 +47,19 @@ public class App {
 
     private final Gson gson;
     private final Injector injector;
+    private final GraphQLRoutes graphQLRoutes;
+    private final RESTRoutesV1 restRoutesV1;
 
     App() throws Exception {
         this.gson = new Gson();
         this.injector = Guice.createInjector(new InjectorModule(this.gson, load(this.gson)));
+        this.graphQLRoutes = this.injector.getInstance(GraphQLRoutes.class);
+        this.restRoutesV1 = this.injector.getInstance(RESTRoutesV1.class);
+    }
+
+    public void setupServer() {
+        Spark.post("/graphql", this.graphQLRoutes::process);
+        Spark.get("/v1/greet", this.restRoutesV1::greet);
     }
 
     /**
@@ -63,25 +71,12 @@ public class App {
         final App app;
         try {
             app = new App();
+            app.setupServer();
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> app.injector.getInstance(DatabaseConnectionPool.class).shutdown()));
         } catch (Exception e) {
             Logger.getGlobal().log(Level.SEVERE, "Unable to start server: {}", e.getMessage());
             e.printStackTrace(System.err);
-            return;
         }
-        Spark.post("/graphql", (request, response) -> {
-            response.type("application/json");
-            final String body = request.body();
-            final GraphQLRequest graphQLRequest = app.gson.fromJson(body, GraphQLRequest.class);
-            final GraphQLSchema.Builder schemaBuilder = GraphQLSchema.newSchema();
-            final GraphQLSchema schema = schemaBuilder.build();
-            final GraphQL graphQL = GraphQL.newGraphQL(schema).build();
-
-            final ExecutionInput.Builder builder = ExecutionInput.newExecutionInput()
-                .query(graphQLRequest.getQuery());
-            graphQLRequest.getVariables().ifPresent(builder::variables);
-            graphQLRequest.getOperationName().ifPresent(builder::operationName);
-            return graphQL.execute(builder);
-        });
     }
 
     /**

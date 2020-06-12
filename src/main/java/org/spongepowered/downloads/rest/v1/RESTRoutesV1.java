@@ -22,27 +22,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.database;
+package org.spongepowered.downloads.rest.v1;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import com.google.inject.Inject;
+import org.spongepowered.downloads.buisness.MetadataDownload;
+import spark.Request;
+import spark.Response;
 
-/**
- * Represents a pool of {@link Connection connections}.
- */
-public interface DatabaseConnectionPool {
+public class RESTRoutesV1 {
 
-    /**
-     * Gets a {@link Connection} to use from the pool.
-     *
-     * @return The {@link Connection}
-     * @throws SQLException if a connection could not be made
-     */
-    Connection getConnection() throws SQLException;
+    private final MetadataDownload metadataDownload;
 
-    /**
-     * Called when the pool should be shut down.
-     */
-    void shutdown();
+    @Inject
+    public RESTRoutesV1(MetadataDownload metadataDownload) {
+        this.metadataDownload = metadataDownload;
+    }
+
+    public Object greet(Request request, Response response) {
+        return "Hello!";
+    }
 
 }

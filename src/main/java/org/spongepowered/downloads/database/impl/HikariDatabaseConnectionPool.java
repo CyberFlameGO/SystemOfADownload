@@ -40,7 +40,7 @@ import javax.sql.DataSource;
  */
 public class HikariDatabaseConnectionPool implements DatabaseConnectionPool {
 
-    private final DataSource dataSource;
+    private final HikariDataSource dataSource;
 
     /**
      * Constructs this object.
@@ -59,6 +59,14 @@ public class HikariDatabaseConnectionPool implements DatabaseConnectionPool {
     @Override
     public Connection getConnection() throws SQLException {
         return this.dataSource.getConnection();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void shutdown() {
+        this.dataSource.close();
     }
 
 }
