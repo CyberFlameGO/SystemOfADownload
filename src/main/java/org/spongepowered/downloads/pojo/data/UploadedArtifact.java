@@ -24,56 +24,55 @@
  */
 package org.spongepowered.downloads.pojo.data;
 
-import java.net.URL;
-import java.time.ZonedDateTime;
-
+// TODO: There will be more to add here, for sure.
 /**
- * Represents a download
+ * Represents an uploaded file.
  */
-public class Downloadable {
+public class UploadedArtifact {
 
-    private final URL location;
+    private final String productid;
+    private final String name;
     private final String version;
-    private final String author;
-    private final String changelog;
     private final String commit;
-    private final ZonedDateTime zonedDateTime;
+    private final byte[] file;
 
     /**
-     * Constructs this data object.
+     * Constructs this uploaded artifact.
      *
-     * @param location The URL of the object
-     * @param version The version of the object
-     * @param author The author of the object
-     * @param changelog The changelog associated with the object
-     * @param commit The commit this object refers to
-     * @param zonedDateTime The time the object was created
+     * @param productid The product ID.
+     * @param name The name of the artifact
+     * @param version The version of the artifact
+     * @param commit The commit this file was created with
+     * @param file The file
      */
-    public Downloadable(URL location,
-            String version,
-            String author,
-            String changelog,
-            String commit,
-            ZonedDateTime zonedDateTime) {
-        this.location = location;
+    public UploadedArtifact(String productid, String name, String version, String commit, byte[] file) {
+        this.productid = productid;
+        this.name = name;
         this.version = version;
-        this.author = author;
-        this.changelog = changelog;
+        this.file = file;
         this.commit = commit;
-        this.zonedDateTime = zonedDateTime;
     }
 
     /**
-     * The URL of the object.
+     * The product ID.
      *
-     * @return The URL
+     * @return The product ID
      */
-    public URL getLocation() {
-        return this.location;
+    public String getProductID() {
+        return this.productid;
     }
 
     /**
-     * The version of the object.
+     * The name of the file.
+     *
+     * @return The name
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * The version of the file.
      *
      * @return The version
      */
@@ -82,39 +81,21 @@ public class Downloadable {
     }
 
     /**
-     * The author of the object.
+     * The git commit hash.
      *
-     * @return The author
-     */
-    public String getAuthor() {
-        return this.author;
-    }
-
-    /**
-     * The changelog.
-     *
-     * @return The changelog
-     */
-    public String getChangelog() {
-        return this.changelog;
-    }
-
-    /**
-     * The commit this was built against.
-     *
-     * @return The commit.
+     * @return the commit
      */
     public String getCommit() {
         return this.commit;
     }
 
     /**
-     * The date the object was made.
+     * The file.
      *
-     * @return The date
+     * @return The array of bytes that represets this file
      */
-    public ZonedDateTime getZonedDateTime() {
-        return this.zonedDateTime;
+    public byte[] getFile() {
+        return this.file;
     }
 
 }

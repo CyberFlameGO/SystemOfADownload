@@ -22,38 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.database.dummyimpl;
-
-import com.google.common.collect.ImmutableList;
-import org.spongepowered.downloads.database.DatabasePersistence;
-import org.spongepowered.downloads.pojo.data.Downloadable;
-import org.spongepowered.downloads.pojo.query.DownloadableQuery;
-
-import java.util.List;
+package org.spongepowered.downloads.buisness.changelog;
 
 /**
- * A dummy DB class
+ * Generates a changelog.
  */
-public class DummyDatabasePersistence implements DatabasePersistence {
+public interface ChangelogGenerator {
 
-    /**
-     * Returns an empty list.
-     *
-     * @param query The query to execute
-     * @return An empty list
-     */
-    @Override
-    public List<Downloadable> getDownloadable(DownloadableQuery query) {
-        return ImmutableList.of();
-    }
-
-    /**
-     * No-op.
-     *
-     * @param downloadable The {@link Downloadable}
-     */
-    @Override
-    public void createDownloadable(Downloadable downloadable) {
-
-    }
 }

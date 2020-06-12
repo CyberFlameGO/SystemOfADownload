@@ -30,7 +30,7 @@ import graphql.ExecutionInput;
 import graphql.GraphQL;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
-import org.spongepowered.downloads.buisness.MetadataDownload;
+import org.spongepowered.downloads.buisness.Metadata;
 import org.spongepowered.downloads.buisness.UploadProcessor;
 import spark.Request;
 import spark.Response;
@@ -41,7 +41,7 @@ import spark.Response;
 public class GraphQLRoutes {
 
     private final Gson gson;
-    private final MetadataDownload metadataDownload;
+    private final Metadata metadata;
     private final UploadProcessor uploadProcessor;
     private final GraphQLSchema schema;
 
@@ -49,13 +49,13 @@ public class GraphQLRoutes {
      * Creates this instance.
      *
      * @param gson The {@link Gson} instance for the app
-     * @param metadataDownload The {@link MetadataDownload} business logic layer
+     * @param metadata The {@link Metadata} business logic layer
      * @param uploadProcessor The {@link UploadProcessor} business logic layer
      */
     @Inject
-    public GraphQLRoutes(Gson gson, MetadataDownload metadataDownload, UploadProcessor uploadProcessor) {
+    public GraphQLRoutes(Gson gson, Metadata metadata, UploadProcessor uploadProcessor) {
         this.gson = gson;
-        this.metadataDownload = metadataDownload;
+        this.metadata = metadata;
         this.uploadProcessor = uploadProcessor;
         this.schema = createV1Schema();
     }

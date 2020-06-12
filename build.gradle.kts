@@ -10,9 +10,8 @@ plugins {
 }
 
 repositories {
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    maven(url = "https://repo.eclipse.org/content/groups/releases/")
 }
 
 dependencies {
@@ -20,8 +19,18 @@ dependencies {
     implementation("com.graphql-java:graphql-java:15.0")
     implementation("com.sparkjava:spark-core:2.8.0")
     implementation("com.google.code.gson:gson:2.8.6")
+
+    // Update this to 4.2.4 or 4.3, whatever comes next once we can.
+    // Currently getting "illegal reflective access operation" - this
+    // is due to J11 telling us it's about to be stricter.
+    //
+    // (i.e., waiting for this to be pulled into Guice:
+    // https://github.com/google/guice/pull/1298)
     implementation("com.google.inject:guice:4.2.3")
     implementation("org.slf4j:slf4j-simple:1.7.9")
+
+    // JGit
+    implementation("org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r")
 
     // Database handling
     implementation("com.zaxxer:HikariCP:3.4.5")

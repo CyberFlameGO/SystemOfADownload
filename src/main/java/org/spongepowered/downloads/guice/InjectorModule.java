@@ -27,10 +27,12 @@ package org.spongepowered.downloads.guice;
 import com.google.gson.Gson;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
-import org.spongepowered.downloads.buisness.MetadataDownload;
+import org.spongepowered.downloads.buisness.Metadata;
 import org.spongepowered.downloads.buisness.UploadProcessor;
-import org.spongepowered.downloads.buisness.impl.MetadataDownloadImpl;
-import org.spongepowered.downloads.buisness.impl.UploadProcessorImpl;
+import org.spongepowered.downloads.buisness.MetadataImpl;
+import org.spongepowered.downloads.buisness.UploadProcessorImpl;
+import org.spongepowered.downloads.buisness.changelog.ChangelogGenerator;
+import org.spongepowered.downloads.buisness.changelog.ChangelogGeneratorImpl;
 import org.spongepowered.downloads.config.AppConfig;
 import org.spongepowered.downloads.database.DatabaseConnectionPool;
 import org.spongepowered.downloads.database.DatabasePersistence;
@@ -39,10 +41,11 @@ import org.spongepowered.downloads.database.dummyimpl.DummyDatabasePersistence;
 import org.spongepowered.downloads.database.impl.HikariDatabaseConnectionPool;
 import org.spongepowered.downloads.database.impl.PostgresDatabasePersistence;
 import org.spongepowered.downloads.graphql.GraphQLRoutes;
-import org.spongepowered.downloads.rest.v1.RESTRoutesV1;
+import org.spongepowered.downloads.rest.RESTRoutesV1;
+import org.spongepowered.downloads.rest.RESTRoutesV2;
 
 /**
- * Contains all the Guice bindings
+ * Contains all the Guice bindings.
  */
 public class InjectorModule extends AbstractModule {
 
@@ -71,9 +74,11 @@ public class InjectorModule extends AbstractModule {
             bind(DatabaseConnectionPool.class).toInstance(new HikariDatabaseConnectionPool(this.appConfig.getDatabaseConfig()));
             bind(DatabasePersistence.class).to(PostgresDatabasePersistence.class).in(Singleton.class);
         }
-        bind(MetadataDownload.class).to(MetadataDownloadImpl.class).in(Singleton.class);
+        bind(Metadata.class).to(MetadataImpl.class).in(Singleton.class);
         bind(UploadProcessor.class).to(UploadProcessorImpl.class).in(Singleton.class);
+        bind(ChangelogGenerator.class).to(ChangelogGeneratorImpl.class).in(Singleton.class);
         bind(RESTRoutesV1.class).in(Singleton.class);
+        bind(RESTRoutesV2.class).in(Singleton.class);
         bind(GraphQLRoutes.class).in(Singleton.class);
     }
 

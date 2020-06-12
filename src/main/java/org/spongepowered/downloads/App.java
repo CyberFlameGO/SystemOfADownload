@@ -32,7 +32,7 @@ import org.spongepowered.downloads.config.AppConfig;
 import org.spongepowered.downloads.database.DatabaseConnectionPool;
 import org.spongepowered.downloads.graphql.GraphQLRoutes;
 import org.spongepowered.downloads.guice.InjectorModule;
-import org.spongepowered.downloads.rest.v1.RESTRoutesV1;
+import org.spongepowered.downloads.rest.RESTRoutesV1;
 import spark.Spark;
 
 import java.io.IOException;
@@ -59,7 +59,14 @@ public class App {
 
     public void setupServer() {
         Spark.post("/graphql", this.graphQLRoutes::process);
-        Spark.get("/v1/greet", this.restRoutesV1::greet);
+
+        // Legacy API routes
+        Spark.get("/v1/projects", this.restRoutesV1::getAllProjects);
+        Spark.get("/v1/:groupId/:artifactId", this.restRoutesV1::getProject);
+        Spark.get("/v1/:groupId/:artifactId/downloads", this.restRoutesV1::getProjectDownloads);
+        Spark.get("/v1/:groupId/:artifactId/downloads/:version", this.restRoutesV1::getProjectDownloadVersion);
+        Spark.get("/v1/:groupId/:artifactId/downloads/recommended", this.restRoutesV1::getProjectDownloadRecommended);
+
     }
 
     /**

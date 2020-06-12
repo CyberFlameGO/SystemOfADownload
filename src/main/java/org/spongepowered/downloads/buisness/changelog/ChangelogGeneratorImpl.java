@@ -22,27 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness;
-
-import graphql.schema.DataFetchingEnvironment;
-import org.spongepowered.downloads.pojo.data.Downloadable;
-
-import java.util.List;
+package org.spongepowered.downloads.buisness.changelog;
 
 /**
- * Business layer logic to obtain download metadata. Generally associated with
- * public routes.
+ * Implementation for generating a changelog
  */
-public interface MetadataDownload {
-
-    /**
-     * Given a {@link DataFetchingEnvironment}, retrieves the appropriate
-     * {@link Downloadable}s
-     *
-     * @param dataFetchingEnvironment The environment
-     * @return The list of {@link Downloadable}s
-     */
-    List<Downloadable> retrieve(DataFetchingEnvironment dataFetchingEnvironment);
-
+public class ChangelogGeneratorImpl implements ChangelogGenerator {
 
 }

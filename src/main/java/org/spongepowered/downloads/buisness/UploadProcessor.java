@@ -24,7 +24,7 @@
  */
 package org.spongepowered.downloads.buisness;
 
-import graphql.schema.DataFetchingEnvironment;
+import org.spongepowered.downloads.pojo.data.UploadedArtifact;
 
 /**
  * Handles upload requests
@@ -32,10 +32,10 @@ import graphql.schema.DataFetchingEnvironment;
 public interface UploadProcessor {
 
     /**
-     * Uploads a file based on the GraphQL mutator provided.
+     * Processes a file uploaded to this system
      *
-     * @param dataFetchingEnvironment The {@link DataFetchingEnvironment}
+     * @param uploadedArtifact The {@link UploadedArtifact}
      */
-    void uploadFile(DataFetchingEnvironment dataFetchingEnvironment);
+    void uploadFile(UploadedArtifact uploadedArtifact);
 
 }

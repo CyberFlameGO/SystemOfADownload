@@ -22,28 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.impl;
+package org.spongepowered.downloads.buisness;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
-import graphql.schema.DataFetchingEnvironment;
-import org.spongepowered.downloads.buisness.MetadataDownload;
+import org.spongepowered.downloads.config.AppConfig;
 import org.spongepowered.downloads.database.DatabasePersistence;
 import org.spongepowered.downloads.pojo.data.Downloadable;
+import org.spongepowered.downloads.pojo.query.DownloadableQuery;
 
 import java.util.List;
 
-public class MetadataDownloadImpl implements MetadataDownload {
+public class MetadataImpl implements Metadata {
 
+    private final AppConfig appConfig;
     private final DatabasePersistence persistence;
 
     @Inject
-    public MetadataDownloadImpl(DatabasePersistence persistence) {
+    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
+        this.appConfig = appConfig;
         this.persistence = persistence;
     }
 
     @Override
-    public List<Downloadable> retrieve(DataFetchingEnvironment dataFetchingEnvironment) {
+    public List<Downloadable> retrieve(DownloadableQuery query) {
         return ImmutableList.of();
     }
 

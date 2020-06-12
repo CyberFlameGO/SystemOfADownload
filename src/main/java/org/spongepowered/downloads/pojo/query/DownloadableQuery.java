@@ -24,6 +24,11 @@
  */
 package org.spongepowered.downloads.pojo.query;
 
+import org.spongepowered.downloads.pojo.data.Downloadable;
+
+/**
+ * Specifies which {@link Downloadable}s to obtain from the database.
+ */
 public class DownloadableQuery {
 
 }

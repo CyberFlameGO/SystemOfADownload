@@ -22,24 +22,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.rest.v1;
+package org.spongepowered.downloads.rest;
 
 import com.google.inject.Inject;
-import org.spongepowered.downloads.buisness.MetadataDownload;
+import org.spongepowered.downloads.buisness.Metadata;
+import org.spongepowered.downloads.rest.objects.v1.BasicProject;
 import spark.Request;
 import spark.Response;
 
-public class RESTRoutesV1 {
+import java.util.stream.Collectors;
 
-    private final MetadataDownload metadataDownload;
+/**
+ * REST v2 routes.
+ */
+public class RESTRoutesV2 {
+
+    private final Metadata metadata;
 
     @Inject
-    public RESTRoutesV1(MetadataDownload metadataDownload) {
-        this.metadataDownload = metadataDownload;
-    }
-
-    public Object greet(Request request, Response response) {
-        return "Hello!";
+    public RESTRoutesV2(Metadata metadata) {
+        this.metadata = metadata;
     }
 
 }

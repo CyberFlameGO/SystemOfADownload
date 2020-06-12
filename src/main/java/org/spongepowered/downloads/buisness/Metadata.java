@@ -22,38 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.database.dummyimpl;
+package org.spongepowered.downloads.buisness;
 
-import com.google.common.collect.ImmutableList;
-import org.spongepowered.downloads.database.DatabasePersistence;
+import org.spongepowered.downloads.config.AppConfig;
 import org.spongepowered.downloads.pojo.data.Downloadable;
 import org.spongepowered.downloads.pojo.query.DownloadableQuery;
 
 import java.util.List;
 
 /**
- * A dummy DB class
+ * Business layer logic to obtain download metadata. Generally associated with
+ * public routes.
  */
-public class DummyDatabasePersistence implements DatabasePersistence {
+public interface Metadata {
 
     /**
-     * Returns an empty list.
+     * Gets all the products available.
      *
-     * @param query The query to execute
-     * @return An empty list
+     * @return The products
      */
-    @Override
-    public List<Downloadable> getDownloadable(DownloadableQuery query) {
-        return ImmutableList.of();
-    }
+    List<AppConfig.Product> getAllProducts();
 
     /**
-     * No-op.
+     * Given a {@link DownloadableQuery}, retrieves the appropriate
+     * {@link Downloadable}s
      *
-     * @param downloadable The {@link Downloadable}
+     * @param query The {@link DownloadableQuery}
+     * @return The list of {@link Downloadable}s
      */
-    @Override
-    public void createDownloadable(Downloadable downloadable) {
+    List<Downloadable> retrieve(DownloadableQuery query);
 
-    }
+
 }

@@ -22,22 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.impl;
+package org.spongepowered.downloads.buisness;
 
-import graphql.schema.DataFetchingEnvironment;
-import org.spongepowered.downloads.buisness.UploadProcessor;
+import com.google.inject.Inject;
+import org.spongepowered.downloads.buisness.changelog.ChangelogGenerator;
+import org.spongepowered.downloads.database.DatabasePersistence;
+import org.spongepowered.downloads.pojo.data.UploadedArtifact;
 
 /**
  * Implementation for UploadProcessor
  */
 public class UploadProcessorImpl implements UploadProcessor {
 
-    /**
-     * Uploads a file based on the GraphQL mutator provided.
-     *
-     * @param dataFetchingEnvironment The {@link DataFetchingEnvironment}
-     */
-    public void uploadFile(DataFetchingEnvironment dataFetchingEnvironment) {
+    private final ChangelogGenerator changelogGenerator;
+    private final DatabasePersistence databasePersistence;
+
+    @Inject
+    public UploadProcessorImpl(ChangelogGenerator changelogGenerator, DatabasePersistence databasePersistence) {
+        this.changelogGenerator = changelogGenerator;
+        this.databasePersistence = databasePersistence;
+    }
+
+    @Override
+    public void uploadFile(UploadedArtifact uploadedArtifact) {
 
     }
 
