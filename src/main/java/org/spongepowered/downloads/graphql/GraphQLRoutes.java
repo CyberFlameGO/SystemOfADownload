@@ -30,10 +30,11 @@ import graphql.ExecutionInput;
 import graphql.GraphQL;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
-import org.spongepowered.downloads.buisness.Metadata;
-import org.spongepowered.downloads.buisness.UploadProcessor;
+import org.spongepowered.downloads.buisness.maven.Maven;
+import org.spongepowered.downloads.buisness.metadata.Metadata;
 import spark.Request;
 import spark.Response;
+import spark.Spark;
 
 /**
  * Contains the GraphQL routes
@@ -42,7 +43,7 @@ public class GraphQLRoutes {
 
     private final Gson gson;
     private final Metadata metadata;
-    private final UploadProcessor uploadProcessor;
+    private final Maven maven;
     private final GraphQLSchema schema;
 
     /**
@@ -50,14 +51,15 @@ public class GraphQLRoutes {
      *
      * @param gson The {@link Gson} instance for the app
      * @param metadata The {@link Metadata} business logic layer
-     * @param uploadProcessor The {@link UploadProcessor} business logic layer
+     * @param maven The {@link Maven} business logic layer
      */
     @Inject
-    public GraphQLRoutes(Gson gson, Metadata metadata, UploadProcessor uploadProcessor) {
+    public GraphQLRoutes(Gson gson, Metadata metadata, Maven maven) {
         this.gson = gson;
         this.metadata = metadata;
-        this.uploadProcessor = uploadProcessor;
+        this.maven = maven;
         this.schema = createV1Schema();
+        Spark.post("/graphql", this::process);
     }
 
     /**

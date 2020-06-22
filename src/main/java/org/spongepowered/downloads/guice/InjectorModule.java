@@ -27,10 +27,15 @@ package org.spongepowered.downloads.guice;
 import com.google.gson.Gson;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
-import org.spongepowered.downloads.buisness.Metadata;
-import org.spongepowered.downloads.buisness.UploadProcessor;
-import org.spongepowered.downloads.buisness.MetadataImpl;
-import org.spongepowered.downloads.buisness.UploadProcessorImpl;
+import com.google.inject.matcher.Matchers;
+import org.slf4j.Logger;
+import org.spongepowered.downloads.auth.Authentication;
+import org.spongepowered.downloads.auth.annotation.Authorize;
+import org.spongepowered.downloads.auth.dummy.DummyAuthentication;
+import org.spongepowered.downloads.buisness.maven.Maven;
+import org.spongepowered.downloads.buisness.maven.MavenImpl;
+import org.spongepowered.downloads.buisness.metadata.Metadata;
+import org.spongepowered.downloads.buisness.metadata.MetadataImpl;
 import org.spongepowered.downloads.buisness.changelog.ChangelogGenerator;
 import org.spongepowered.downloads.buisness.changelog.ChangelogGeneratorImpl;
 import org.spongepowered.downloads.config.AppConfig;
@@ -51,6 +56,7 @@ public class InjectorModule extends AbstractModule {
 
     private final AppConfig appConfig;
     private final Gson gson;
+    private final Logger logger;
 
     /**
      * Create the module.
@@ -58,15 +64,25 @@ public class InjectorModule extends AbstractModule {
      * @param gson The {@link Gson} object to use around the application.
      * @param appConfig The {@link AppConfig} that configures this application.
      */
-    public InjectorModule(Gson gson, AppConfig appConfig) {
+    public InjectorModule(Gson gson, AppConfig appConfig, Logger logger) {
         this.gson = gson;
         this.appConfig = appConfig;
+        this.logger = logger;
     }
 
     @Override
     protected void configure() {
         bind(Gson.class).toInstance(this.gson);
         bind(AppConfig.class).toInstance(this.appConfig);
+        bind(Logger.class).toInstance(this.logger);
+
+        // Authentication
+        // TODO: SpongeAuth
+        var authentication = new DummyAuthentication();
+        var authMethodInterceptor = new AuthorizationMethodInterceptor(this.logger, authentication);
+        bind(Authentication.class).toInstance(authentication);
+
+        // Database
         if (this.appConfig.getDatabaseConfig().isUseDummy()) {
             bind(DatabaseConnectionPool.class).to(DummyDatabaseConnectionPool.class).in(Singleton.class);
             bind(DatabasePersistence.class).to(DummyDatabasePersistence.class).in(Singleton.class);
@@ -74,12 +90,22 @@ public class InjectorModule extends AbstractModule {
             bind(DatabaseConnectionPool.class).toInstance(new HikariDatabaseConnectionPool(this.appConfig.getDatabaseConfig()));
             bind(DatabasePersistence.class).to(PostgresDatabasePersistence.class).in(Singleton.class);
         }
+
+        // Business logic
+        bindInterceptor(
+                Matchers.any(),
+                Matchers.annotatedWith(Authorize.class),
+                authMethodInterceptor);
         bind(Metadata.class).to(MetadataImpl.class).in(Singleton.class);
-        bind(UploadProcessor.class).to(UploadProcessorImpl.class).in(Singleton.class);
+        bind(Maven.class).to(MavenImpl.class).in(Singleton.class);
         bind(ChangelogGenerator.class).to(ChangelogGeneratorImpl.class).in(Singleton.class);
-        bind(RESTRoutesV1.class).in(Singleton.class);
-        bind(RESTRoutesV2.class).in(Singleton.class);
-        bind(GraphQLRoutes.class).in(Singleton.class);
+
+        // Anything that contains Spark routes should be eager singletons, as this will
+        // start the initialisation of the system and register the routes (if the routes
+        // are registered in the constructors, as they should be!)
+        bind(RESTRoutesV1.class).asEagerSingleton();
+        bind(RESTRoutesV2.class).asEagerSingleton();
+        bind(GraphQLRoutes.class).asEagerSingleton();
     }
 
 }

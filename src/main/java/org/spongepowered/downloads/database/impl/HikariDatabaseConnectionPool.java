@@ -24,7 +24,6 @@
  */
 package org.spongepowered.downloads.database.impl;
 
-import com.google.inject.Inject;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.spongepowered.downloads.config.AppConfig;
@@ -32,8 +31,6 @@ import org.spongepowered.downloads.database.DatabaseConnectionPool;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import javax.sql.DataSource;
 
 /**
  * The Hikari implementation of the {@link DatabaseConnectionPool}.
@@ -51,6 +48,7 @@ public class HikariDatabaseConnectionPool implements DatabaseConnectionPool {
         var config = new HikariConfig();
         config.setJdbcUrl(databaseConfig.getJdbcUrl());
         this.dataSource = new HikariDataSource(config);
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
     /**

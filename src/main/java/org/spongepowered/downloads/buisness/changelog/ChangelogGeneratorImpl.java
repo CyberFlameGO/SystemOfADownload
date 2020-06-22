@@ -24,9 +24,81 @@
  */
 package org.spongepowered.downloads.buisness.changelog;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.PersonIdent;
+import org.spongepowered.downloads.config.AppConfig;
+import org.spongepowered.downloads.pojo.data.Changelog;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.ZoneOffset;
+
 /**
  * Implementation for generating a changelog
  */
 public class ChangelogGeneratorImpl implements ChangelogGenerator {
+
+    private final AppConfig appConfig;
+
+    /**
+     * Creates this changelog generator.
+     *
+     * @param appConfig The config
+     */
+    @Inject
+    public ChangelogGeneratorImpl(AppConfig appConfig) {
+        this.appConfig = appConfig;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Changelog getChangelogFor(String productid, String fromHash, String toHash) {
+        AppConfig.Product product = this.appConfig.getProduct(productid);
+        if (product == null) {
+            throw new IllegalArgumentException("The product " + productid + " does not exist.");
+        }
+        return getChangelogFor(product, productid, fromHash, toHash);
+    }
+
+    private Changelog getChangelogFor(AppConfig.Product product, String productid, String fromHash, String toHash) {
+        final Path productRepo = this.appConfig.getRepoCacheDirectory().resolve(productid);
+        final Git gitRepo;
+        try {
+            if (Files.notExists(productRepo)) {
+                Files.createDirectories(productRepo);
+                gitRepo = Git.cloneRepository()
+                        .setCloneAllBranches(true)
+                        .setDirectory(productRepo.toFile())
+                        .setURI(product.getRepo())
+                        .call();
+            } else {
+                gitRepo = Git.open(productRepo.toFile());
+                gitRepo.fetch().call();
+            }
+            var fromCommit = ObjectId.fromString(fromHash);
+            var toCommit = ObjectId.fromString(toHash);
+            var logCommits = gitRepo.log().addRange(fromCommit, toCommit).call();
+            // TODO: Submodules
+            ImmutableList.Builder<Changelog.Entry> entries = ImmutableList.builder();
+            for (var commit : logCommits) {
+                PersonIdent ident = commit.getAuthorIdent();
+                entries.add(new Changelog.Entry(
+                        commit.toObjectId().toString(),
+                        commit.getFullMessage(),
+                        ident.getName(),
+                        ident.getWhen().toInstant().atZone(ZoneOffset.UTC)
+                ));
+            }
+            return new Changelog(entries.build(), ImmutableMap.of());
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not get changelog.", e);
+        }
+    }
 
 }

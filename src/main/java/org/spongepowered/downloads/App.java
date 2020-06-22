@@ -24,64 +24,46 @@
  */
 package org.spongepowered.downloads;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.inject.Guice;
-import com.google.inject.Injector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.database.DatabaseConnectionPool;
 import org.spongepowered.downloads.graphql.GraphQLRoutes;
 import org.spongepowered.downloads.guice.InjectorModule;
 import org.spongepowered.downloads.rest.RESTRoutesV1;
-import spark.Spark;
+import org.spongepowered.downloads.rest.RESTRoutesV2;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+/**
+ * The entry point to the application
+ */
 public class App {
 
     private static final String CONFIG_LOCATION = "appconfig.json";
-
-    private final Gson gson;
-    private final Injector injector;
-    private final GraphQLRoutes graphQLRoutes;
-    private final RESTRoutesV1 restRoutesV1;
-
-    App() throws Exception {
-        this.gson = new Gson();
-        this.injector = Guice.createInjector(new InjectorModule(this.gson, load(this.gson)));
-        this.graphQLRoutes = this.injector.getInstance(GraphQLRoutes.class);
-        this.restRoutesV1 = this.injector.getInstance(RESTRoutesV1.class);
-    }
-
-    public void setupServer() {
-        Spark.post("/graphql", this.graphQLRoutes::process);
-
-        // Legacy API routes
-        Spark.get("/v1/projects", this.restRoutesV1::getAllProjects);
-        Spark.get("/v1/:groupId/:artifactId", this.restRoutesV1::getProject);
-        Spark.get("/v1/:groupId/:artifactId/downloads", this.restRoutesV1::getProjectDownloads);
-        Spark.get("/v1/:groupId/:artifactId/downloads/:version", this.restRoutesV1::getProjectDownloadVersion);
-        Spark.get("/v1/:groupId/:artifactId/downloads/recommended", this.restRoutesV1::getProjectDownloadRecommended);
-
-    }
+    private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     /**
-     * Entrypoint for the app. Does
+     * Entrypoint for the app.
      *
      * @param args entrypoint args
      */
     public static void main(final String[] args) {
-        final App app;
         try {
-            app = new App();
-            app.setupServer();
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> app.injector.getInstance(DatabaseConnectionPool.class).shutdown()));
-        } catch (Exception e) {
-            Logger.getGlobal().log(Level.SEVERE, "Unable to start server: {}", e.getMessage());
+            final var gson = new Gson();
+
+            // This creation contains classes that will be instantiated as
+            // "Eager Singletons". These will initialise the application for us
+            // so we need to do no more here, and we won't need the injector
+            // once done.
+            Guice.createInjector(new InjectorModule(gson, load(gson), logger));
+        } catch (Throwable e) {
+            logger.error("Unable to start server: {}", e.getMessage());
             e.printStackTrace(System.err);
         }
     }

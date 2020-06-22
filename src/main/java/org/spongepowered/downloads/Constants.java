@@ -22,24 +22,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.changelog;
-
-import org.spongepowered.downloads.pojo.data.Changelog;
+package org.spongepowered.downloads;
 
 /**
- * Generates a changelog.
+ * Constants used in this application
  */
-public interface ChangelogGenerator {
+public final class Constants {
+
+    private Constants() {}
 
     /**
-     * Gets the changelog between the two specified hashes for the specified
-     * repo (as named in the app config).
-     *
-     * @param repo The repo
-     * @param fromHash The first hash
-     * @param toHash The second hash
-     * @return The changelog.
+     * The header that contains the authentication token.
      */
-    Changelog getChangelogFor(String repo, String fromHash, String toHash);
+    public static final String X_ACCESS_TOKEN_HEADER = "X-Auth-Token";
+
 
 }

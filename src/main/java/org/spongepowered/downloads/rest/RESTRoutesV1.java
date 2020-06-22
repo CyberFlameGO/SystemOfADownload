@@ -25,10 +25,11 @@
 package org.spongepowered.downloads.rest;
 
 import com.google.inject.Inject;
-import org.spongepowered.downloads.buisness.Metadata;
+import org.spongepowered.downloads.buisness.metadata.Metadata;
 import org.spongepowered.downloads.rest.objects.v1.BasicProject;
 import spark.Request;
 import spark.Response;
+import spark.Spark;
 
 import java.util.stream.Collectors;
 
@@ -39,9 +40,21 @@ public class RESTRoutesV1 {
 
     private final Metadata metadata;
 
+    /**
+     * Creates this instance.
+     */
     @Inject
     public RESTRoutesV1(Metadata metadata) {
         this.metadata = metadata;
+
+        // Temporary route for testing the route works.
+        Spark.get("/v1/greet", ((request, response) -> "Hello"));
+
+        Spark.get("/v1/projects", this::getAllProjects);
+        Spark.get("/v1/:groupId/:artifactId", this::getProject);
+        Spark.get("/v1/:groupId/:artifactId/downloads", this::getProjectDownloads);
+        Spark.get("/v1/:groupId/:artifactId/downloads/:version", this::getProjectDownloadVersion);
+        Spark.get("/v1/:groupId/:artifactId/downloads/recommended", this::getProjectDownloadRecommended);
     }
 
     /**

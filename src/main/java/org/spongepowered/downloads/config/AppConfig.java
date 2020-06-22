@@ -24,6 +24,7 @@
  */
 package org.spongepowered.downloads.config;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
@@ -34,6 +35,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +45,9 @@ public class AppConfig {
 
     @JsonAdapter(PathTypeAdapter.class)
     private Path tempDirectory = Path.of("tmp");
+
+    @JsonAdapter(PathTypeAdapter.class)
+    private Path repoDirectory = Path.of("repoCache");
     private Database database;
     private Map<String, Product> products;
 
@@ -79,6 +84,24 @@ public class AppConfig {
             throw new IllegalArgumentException("Product was provided that is not supported by this indexer.");
         }
         return product;
+    }
+
+    /**
+     * Gets the {@link Product}s available in the cache.
+     *
+     * @return The products
+     */
+    public List<Product> getProducts() {
+        return ImmutableList.copyOf(this.products.values());
+    }
+
+    /**
+     * Gets the directory where repos are cached.
+     *
+     * @return The repo cache directory
+     */
+    public Path getRepoCacheDirectory() {
+        return this.repoDirectory;
     }
 
     /**

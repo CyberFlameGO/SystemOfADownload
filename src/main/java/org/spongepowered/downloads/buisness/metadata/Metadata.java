@@ -22,20 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness;
+package org.spongepowered.downloads.buisness.metadata;
 
-import org.spongepowered.downloads.pojo.data.UploadedArtifact;
+import org.spongepowered.downloads.config.AppConfig;
+import org.spongepowered.downloads.pojo.data.Downloadable;
+import org.spongepowered.downloads.pojo.query.DownloadableQuery;
+
+import java.util.List;
 
 /**
- * Handles upload requests
+ * Business layer logic to obtain download metadata. Generally associated with
+ * public routes.
  */
-public interface UploadProcessor {
+public interface Metadata {
 
     /**
-     * Processes a file uploaded to this system
+     * Gets all the products available.
      *
-     * @param uploadedArtifact The {@link UploadedArtifact}
+     * @return The products
      */
-    void uploadFile(UploadedArtifact uploadedArtifact);
+    List<AppConfig.Product> getAllProducts();
+
+    /**
+     * Given a {@link DownloadableQuery}, retrieves the appropriate
+     * {@link Downloadable}s
+     *
+     * @param query The {@link DownloadableQuery}
+     * @return The list of {@link Downloadable}s
+     */
+    List<Downloadable> retrieve(DownloadableQuery query);
+
 
 }

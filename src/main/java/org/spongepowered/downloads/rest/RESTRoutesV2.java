@@ -25,12 +25,7 @@
 package org.spongepowered.downloads.rest;
 
 import com.google.inject.Inject;
-import org.spongepowered.downloads.buisness.Metadata;
-import org.spongepowered.downloads.rest.objects.v1.BasicProject;
-import spark.Request;
-import spark.Response;
-
-import java.util.stream.Collectors;
+import org.spongepowered.downloads.buisness.metadata.Metadata;
 
 /**
  * REST v2 routes.

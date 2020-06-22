@@ -22,24 +22,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.changelog;
+package org.spongepowered.downloads.buisness.metadata;
 
-import org.spongepowered.downloads.pojo.data.Changelog;
+import com.google.common.collect.ImmutableList;
+import com.google.inject.Inject;
+import org.spongepowered.downloads.config.AppConfig;
+import org.spongepowered.downloads.database.DatabasePersistence;
+import org.spongepowered.downloads.pojo.data.Downloadable;
+import org.spongepowered.downloads.pojo.query.DownloadableQuery;
 
-/**
- * Generates a changelog.
- */
-public interface ChangelogGenerator {
+import java.util.List;
 
-    /**
-     * Gets the changelog between the two specified hashes for the specified
-     * repo (as named in the app config).
-     *
-     * @param repo The repo
-     * @param fromHash The first hash
-     * @param toHash The second hash
-     * @return The changelog.
-     */
-    Changelog getChangelogFor(String repo, String fromHash, String toHash);
+public class MetadataImpl implements Metadata {
+
+    private final AppConfig appConfig;
+    private final DatabasePersistence persistence;
+
+    @Inject
+    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
+        this.appConfig = appConfig;
+        this.persistence = persistence;
+    }
+
+    @Override
+    public List<AppConfig.Product> getAllProducts() {
+        return this.appConfig.getProducts();
+    }
+
+    @Override
+    public List<Downloadable> retrieve(DownloadableQuery query) {
+        return ImmutableList.of();
+    }
 
 }

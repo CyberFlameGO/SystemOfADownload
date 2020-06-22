@@ -22,35 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness;
+package org.spongepowered.downloads.auth.annotation;
 
-import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.pojo.data.Downloadable;
-import org.spongepowered.downloads.pojo.query.DownloadableQuery;
+import org.spongepowered.downloads.auth.Permissions;
 
-import java.util.List;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Business layer logic to obtain download metadata. Generally associated with
- * public routes.
+ * Indicates that the specified {@link Permissions} are required to execute the
+ * decorated method. To be used on business layer methods.
  */
-public interface Metadata {
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Authorize {
 
     /**
-     * Gets all the products available.
-     *
-     * @return The products
+     * The {@link Permissions} that the decorated method requires.
      */
-    List<AppConfig.Product> getAllProducts();
-
-    /**
-     * Given a {@link DownloadableQuery}, retrieves the appropriate
-     * {@link Downloadable}s
-     *
-     * @param query The {@link DownloadableQuery}
-     * @return The list of {@link Downloadable}s
-     */
-    List<Downloadable> retrieve(DownloadableQuery query);
-
+    Permissions[] value();
 
 }
+

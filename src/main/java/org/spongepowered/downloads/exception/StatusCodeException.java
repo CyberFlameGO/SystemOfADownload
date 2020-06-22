@@ -22,30 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness;
-
-import com.google.inject.Inject;
-import org.spongepowered.downloads.buisness.changelog.ChangelogGenerator;
-import org.spongepowered.downloads.database.DatabasePersistence;
-import org.spongepowered.downloads.pojo.data.UploadedArtifact;
+package org.spongepowered.downloads.exception;
 
 /**
- * Implementation for UploadProcessor
+ * An exception that suggests the status code to return.
  */
-public class UploadProcessorImpl implements UploadProcessor {
+public abstract class StatusCodeException extends Exception {
 
-    private final ChangelogGenerator changelogGenerator;
-    private final DatabasePersistence databasePersistence;
-
-    @Inject
-    public UploadProcessorImpl(ChangelogGenerator changelogGenerator, DatabasePersistence databasePersistence) {
-        this.changelogGenerator = changelogGenerator;
-        this.databasePersistence = databasePersistence;
-    }
-
-    @Override
-    public void uploadFile(UploadedArtifact uploadedArtifact) {
-
+    /**
+     * The status code to return for this error.
+     *
+     * @return The status code to return
+     */
+    public int statusCode() {
+        return 500;
     }
 
 }

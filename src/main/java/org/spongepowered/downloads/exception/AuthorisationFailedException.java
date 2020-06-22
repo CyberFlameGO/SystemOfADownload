@@ -22,24 +22,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.changelog;
-
-import org.spongepowered.downloads.pojo.data.Changelog;
+package org.spongepowered.downloads.exception;
 
 /**
- * Generates a changelog.
+ * An exception to indicate that an authorisation request failed.
  */
-public interface ChangelogGenerator {
+public class AuthorisationFailedException extends StatusCodeException {
 
     /**
-     * Gets the changelog between the two specified hashes for the specified
-     * repo (as named in the app config).
-     *
-     * @param repo The repo
-     * @param fromHash The first hash
-     * @param toHash The second hash
-     * @return The changelog.
+     * {@inheritDoc}
      */
-    Changelog getChangelogFor(String repo, String fromHash, String toHash);
+    @Override
+    public int statusCode() {
+        return 403;
+    }
 
 }

@@ -22,31 +22,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness;
+package org.spongepowered.downloads.auth;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
-import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.database.DatabasePersistence;
-import org.spongepowered.downloads.pojo.data.Downloadable;
-import org.spongepowered.downloads.pojo.query.DownloadableQuery;
+import org.spongepowered.downloads.exception.AuthenticationFailedException;
 
-import java.util.List;
+import java.util.Optional;
 
-public class MetadataImpl implements Metadata {
+/**
+ * Contains authentication methods.
+ */
+public interface Authentication {
 
-    private final AppConfig appConfig;
-    private final DatabasePersistence persistence;
+    /**
+     * Uses the given token to authenticate against the auth service.
+     *
+     * @param authToken The token provided by the OAuth authentication service
+     *      to pass to the service to complete authentication.
+     * @return The auth subject
+     * @throws AuthenticationFailedException if authentication failed
+     */
+    AuthSubject authenticate(String authToken) throws AuthenticationFailedException;
 
-    @Inject
-    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
-        this.appConfig = appConfig;
-        this.persistence = persistence;
-    }
+    /**
+     * Reobtains the {@link AuthSubject} for a given access token.
+     *
+     * @param accessToken The access token
+     * @return The {@link AuthSubject}, if the token is still valid
+     */
+    Optional<AuthSubject> refresh(String accessToken);
 
-    @Override
-    public List<Downloadable> retrieve(DownloadableQuery query) {
-        return ImmutableList.of();
-    }
+    /**
+     * Destroys the given token, effectively a "log out".
+     *
+     * @param accessToken The token.
+     */
+    void destroyToken(String accessToken);
+
+    /**
+     * Tests whether the given token is still valid.
+     *
+     * @param accessToken The token
+     * @return if the token is valid.
+     */
+    boolean isTokenValid(String accessToken);
 
 }

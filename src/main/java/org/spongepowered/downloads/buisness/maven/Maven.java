@@ -22,24 +22,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.changelog;
+package org.spongepowered.downloads.buisness.maven;
 
-import org.spongepowered.downloads.pojo.data.Changelog;
+import org.spongepowered.downloads.config.AppConfig;
+import org.spongepowered.downloads.pojo.data.MavenResource;
+
+import java.util.Set;
 
 /**
- * Generates a changelog.
+ * Interacts with a Maven repository
  */
-public interface ChangelogGenerator {
+public interface Maven {
 
     /**
-     * Gets the changelog between the two specified hashes for the specified
-     * repo (as named in the app config).
+     * Gets all resources available on the target Maven server for the given
+     * {@link AppConfig.Product}
      *
-     * @param repo The repo
-     * @param fromHash The first hash
-     * @param toHash The second hash
-     * @return The changelog.
+     * @param product The product
+     * @return The {@link MavenResource}s.
      */
-    Changelog getChangelogFor(String repo, String fromHash, String toHash);
+    Set<MavenResource> getAllResources(AppConfig.Product product);
+
+    /**
+     * Gets a specific resource from the target Maven server.
+     *
+     * @param product The {@link AppConfig.Product}
+     * @param version The version
+     * @return The {@link MavenResource}
+     */
+    MavenResource getResource(AppConfig.Product product, String version);
 
 }
