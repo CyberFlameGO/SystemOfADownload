@@ -27,6 +27,7 @@ package org.spongepowered.downloads.rest;
 import com.google.inject.Inject;
 import org.spongepowered.downloads.buisness.Actions;
 import org.spongepowered.downloads.buisness.metadata.Metadata;
+import spark.Spark;
 
 /**
  * REST v2 routes.
@@ -43,6 +44,9 @@ public class RESTRoutesV2 {
     @Inject
     public RESTRoutesV2(Actions actions) {
         this.actions = actions;
+        Spark.path("/v2", () -> {
+            
+        });
     }
 
 }

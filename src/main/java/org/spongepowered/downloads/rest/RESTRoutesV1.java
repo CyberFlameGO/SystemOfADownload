@@ -56,17 +56,19 @@ public class RESTRoutesV1 {
     public RESTRoutesV1(Actions actions) {
         this.actions = actions;
 
-        // Temporary route for testing the route works.
-        Spark.get("/v1/greet", ((request, response) -> "Hello"));
+        Spark.path("/v1", () -> {
+            // Temporary route for testing the route works.
+            Spark.get("/greet", ((request, response) -> "Hello"));
 
-        Spark.get("/v1/projects", this::getAllProjects);
-        Spark.get("/v1/:groupId/:artifactId", this::getProject);
-        Spark.get("/v1/:groupId/:artifactId/downloads",
-                this::getProjectDownloads);
-        Spark.get("/v1/:groupId/:artifactId/downloads/:version",
-                this::getProjectDownloadVersion);
-        Spark.get("/v1/:groupId/:artifactId/downloads/recommended",
-                this::getProjectDownloadRecommended);
+            Spark.get("/projects", this::getAllProjects);
+            Spark.get("/:groupId/:artifactId", this::getProject);
+            Spark.get("/:groupId/:artifactId/downloads",
+                    this::getProjectDownloads);
+            Spark.get("/:groupId/:artifactId/downloads/:version",
+                    this::getProjectDownloadVersion);
+            Spark.get("/:groupId/:artifactId/downloads/recommended",
+                    this::getProjectDownloadRecommended);
+        });
     }
 
     /**

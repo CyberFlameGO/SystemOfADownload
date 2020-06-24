@@ -82,6 +82,7 @@ public class GraphQLRoutes {
      * @return The object to return
      */
     public Object process(Request request, Response response) {
+        /**
         final var accessTokenHeader = request.headers(Constants.X_ACCESS_TOKEN_HEADER);
         final Optional<? extends Subject> subject;
         if (accessTokenHeader == null || accessTokenHeader.isEmpty()) {
@@ -89,7 +90,7 @@ public class GraphQLRoutes {
         } else {
             subject = this.spongeAuthProvider
                     .refresh(request.headers(Constants.X_ACCESS_TOKEN_HEADER));
-        }
+        }*/
 
         response.type("application/json");
         final String body = request.body();
@@ -102,6 +103,8 @@ public class GraphQLRoutes {
 
         graphQLRequest.getVariables().ifPresent(builder::variables);
         graphQLRequest.getOperationName().ifPresent(builder::operationName);
+
+        // TODO: Ensure that we have an Auth schema.
         return graphQL.execute(builder);
     }
 
