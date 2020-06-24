@@ -29,9 +29,11 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.matcher.Matchers;
 import org.slf4j.Logger;
-import org.spongepowered.downloads.auth.Authentication;
+import org.spongepowered.downloads.auth.provider.APIKeyAuthenticationProvider;
+import org.spongepowered.downloads.auth.provider.DummyAPIKeyAuthenticationProvider;
+import org.spongepowered.downloads.auth.provider.OAuthAuthenticationProvider;
 import org.spongepowered.downloads.auth.annotation.Authorize;
-import org.spongepowered.downloads.auth.dummy.DummyAuthentication;
+import org.spongepowered.downloads.auth.provider.DummyOAuthAuthenticationProvider;
 import org.spongepowered.downloads.buisness.maven.Maven;
 import org.spongepowered.downloads.buisness.maven.MavenImpl;
 import org.spongepowered.downloads.buisness.metadata.Metadata;
@@ -63,6 +65,7 @@ public class InjectorModule extends AbstractModule {
      *
      * @param gson The {@link Gson} object to use around the application.
      * @param appConfig The {@link AppConfig} that configures this application.
+     * @param logger The {@link Logger} to use
      */
     public InjectorModule(Gson gson, AppConfig appConfig, Logger logger) {
         this.gson = gson;
@@ -78,17 +81,28 @@ public class InjectorModule extends AbstractModule {
 
         // Authentication
         // TODO: SpongeAuth
-        var authentication = new DummyAuthentication();
-        var authMethodInterceptor = new AuthorizationMethodInterceptor(this.logger, authentication);
-        bind(Authentication.class).toInstance(authentication);
+        var authMethodInterceptor = new AuthorizationMethodInterceptor();
+        bind(OAuthAuthenticationProvider.class)
+                .to(DummyOAuthAuthenticationProvider.class)
+                .in(Singleton.class);
+        bind(APIKeyAuthenticationProvider.class)
+                .to(DummyAPIKeyAuthenticationProvider.class)
+                .in(Singleton.class);
 
         // Database
         if (this.appConfig.getDatabaseConfig().isUseDummy()) {
-            bind(DatabaseConnectionPool.class).to(DummyDatabaseConnectionPool.class).in(Singleton.class);
-            bind(DatabasePersistence.class).to(DummyDatabasePersistence.class).in(Singleton.class);
+            bind(DatabaseConnectionPool.class)
+                    .to(DummyDatabaseConnectionPool.class)
+                    .in(Singleton.class);
+            bind(DatabasePersistence.class)
+                    .to(DummyDatabasePersistence.class)
+                    .in(Singleton.class);
         } else {
-            bind(DatabaseConnectionPool.class).toInstance(new HikariDatabaseConnectionPool(this.appConfig.getDatabaseConfig()));
-            bind(DatabasePersistence.class).to(PostgresDatabasePersistence.class).in(Singleton.class);
+            bind(DatabaseConnectionPool.class)
+                    .toInstance(new HikariDatabaseConnectionPool(this.appConfig.getDatabaseConfig()));
+            bind(DatabasePersistence.class)
+                    .to(PostgresDatabasePersistence.class)
+                    .in(Singleton.class);
         }
 
         // Business logic

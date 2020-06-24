@@ -22,12 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.auth.dummy;
+package org.spongepowered.downloads.auth.provider;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.downloads.auth.AuthSubject;
-import org.spongepowered.downloads.auth.Authentication;
-import org.spongepowered.downloads.auth.Permissions;
+import org.spongepowered.downloads.auth.subject.AuthSubject;
+import org.spongepowered.downloads.auth.subject.Permissions;
 import org.spongepowered.downloads.exception.AuthenticationFailedException;
 
 import java.util.EnumSet;
@@ -35,9 +34,9 @@ import java.util.Optional;
 import java.util.Random;
 
 /**
- * A dummy auth class to test with
+ * A dummy auth class to test with.
  */
-public class DummyAuthentication implements Authentication {
+public class DummyOAuthAuthenticationProvider implements OAuthAuthenticationProvider {
 
     @Nullable private AuthSubject token;
 
@@ -52,7 +51,10 @@ public class DummyAuthentication implements Authentication {
         for (var b : byteArray) {
             builder.append(String.format("%02x", b));
         }
-        this.token = new AuthSubject("testuser", builder.toString(), EnumSet.allOf(Permissions.class));
+        this.token = new AuthSubject(
+                "testuser",
+                builder.toString(),
+                EnumSet.allOf(Permissions.class));
         return this.token;
     }
 

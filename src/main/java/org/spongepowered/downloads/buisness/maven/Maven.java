@@ -30,13 +30,13 @@ import org.spongepowered.downloads.pojo.data.MavenResource;
 import java.util.Set;
 
 /**
- * Interacts with a Maven repository
+ * Interacts with a Maven repository.
  */
 public interface Maven {
 
     /**
      * Gets all resources available on the target Maven server for the given
-     * {@link AppConfig.Product}
+     * {@link AppConfig.Product}.
      *
      * @param product The product
      * @return The {@link MavenResource}s.

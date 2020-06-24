@@ -51,18 +51,36 @@ public final class GraphQLRequest {
         this.variables = variables;
     }
 
+    /**
+     * Gets the query to execute.
+     *
+     * @return The query
+     */
     public String getQuery() {
         return this.query;
     }
 
+    /**
+     * Gets the name of the operation.
+     *
+     * @return The operation name
+     */
     public Optional<String> getOperationName() {
         return Optional.ofNullable(this.operationName);
     }
 
+    /**
+     * Gets the variables for this request.
+     *
+     * @return The variables, if any.
+     */
     public Optional<Map<String, Object>> getVariables() {
         return Optional.ofNullable(this.variables);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -77,8 +95,12 @@ public final class GraphQLRequest {
             Objects.equals(this.variables, that.variables);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return Objects.hash(this.query, this.operationName, this.variables);
     }
+
 }

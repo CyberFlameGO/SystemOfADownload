@@ -22,51 +22,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.metadata;
+package org.spongepowered.downloads.auth.subject;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
-import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.database.DatabasePersistence;
-import org.spongepowered.downloads.pojo.data.Downloadable;
-import org.spongepowered.downloads.pojo.query.DownloadableQuery;
-
-import java.util.List;
+import java.util.EnumSet;
 
 /**
- * Implements {@link Metadata}.
+ * A {@link Subject} is an entity that has some permissions to this system.
  */
-public class MetadataImpl implements Metadata {
-
-    private final AppConfig appConfig;
-    private final DatabasePersistence persistence;
+public interface Subject {
 
     /**
-     * Constructs this object.
+     * The permissions that this subject has.
      *
-     * @param appConfig The {@link AppConfig}
-     * @param persistence The persistence layer to draw from
+     * @return A set of permissions
      */
-    @Inject
-    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
-        this.appConfig = appConfig;
-        this.persistence = persistence;
-    }
+    EnumSet<Permissions> getPermissions();
 
     /**
-     * {@inheritDoc}
+     * Tests to see if this subject has permission for ALL supplied permissions.
+     *
+     * @param permissions The permissions
+     * @return true if all permissions are granted
      */
-    @Override
-    public List<AppConfig.Product> getAllProducts() {
-        return this.appConfig.getProducts();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Downloadable> retrieve(DownloadableQuery query) {
-        return ImmutableList.of();
-    }
-
+    boolean hasPermission(Permissions[] permissions);
 }

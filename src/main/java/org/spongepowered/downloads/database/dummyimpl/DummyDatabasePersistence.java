@@ -32,7 +32,7 @@ import org.spongepowered.downloads.pojo.query.DownloadableQuery;
 import java.util.List;
 
 /**
- * A dummy DB class
+ * A dummy DB class.
  */
 public class DummyDatabasePersistence implements DatabasePersistence {
 

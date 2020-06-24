@@ -22,51 +22,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.metadata;
+package org.spongepowered.downloads.auth.subject;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
-import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.database.DatabasePersistence;
-import org.spongepowered.downloads.pojo.data.Downloadable;
-import org.spongepowered.downloads.pojo.query.DownloadableQuery;
-
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Implements {@link Metadata}.
+ * A {@link Subject} that represents a basic API user.
  */
-public class MetadataImpl implements Metadata {
-
-    private final AppConfig appConfig;
-    private final DatabasePersistence persistence;
+public final class APISubject extends AbstractSubject {
 
     /**
-     * Constructs this object.
+     * Constructs this {@link APISubject}.
      *
-     * @param appConfig The {@link AppConfig}
-     * @param persistence The persistence layer to draw from
+     * @param permissions The permission to grant this user.
      */
-    @Inject
-    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
-        this.appConfig = appConfig;
-        this.persistence = persistence;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<AppConfig.Product> getAllProducts() {
-        return this.appConfig.getProducts();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Downloadable> retrieve(DownloadableQuery query) {
-        return ImmutableList.of();
+    public APISubject(Collection<Permissions> permissions) {
+        super(permissions);
     }
 
 }

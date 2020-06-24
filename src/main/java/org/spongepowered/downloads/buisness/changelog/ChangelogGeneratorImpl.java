@@ -38,7 +38,7 @@ import java.nio.file.Path;
 import java.time.ZoneOffset;
 
 /**
- * Implementation for generating a changelog
+ * Implementation for generating a changelog.
  */
 public class ChangelogGeneratorImpl implements ChangelogGenerator {
 
@@ -66,7 +66,8 @@ public class ChangelogGeneratorImpl implements ChangelogGenerator {
         return getChangelogFor(product, productid, fromHash, toHash);
     }
 
-    private Changelog getChangelogFor(AppConfig.Product product, String productid, String fromHash, String toHash) {
+    private Changelog getChangelogFor(
+            AppConfig.Product product, String productid, String fromHash, String toHash) {
         final Path productRepo = this.appConfig.getRepoCacheDirectory().resolve(productid);
         final Git gitRepo;
         try {

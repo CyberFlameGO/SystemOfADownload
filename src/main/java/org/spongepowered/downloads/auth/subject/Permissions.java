@@ -22,51 +22,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.metadata;
-
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
-import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.database.DatabasePersistence;
-import org.spongepowered.downloads.pojo.data.Downloadable;
-import org.spongepowered.downloads.pojo.query.DownloadableQuery;
-
-import java.util.List;
+package org.spongepowered.downloads.auth.subject;
 
 /**
- * Implements {@link Metadata}.
+ * The permissions that may be required by various actions.
  */
-public class MetadataImpl implements Metadata {
-
-    private final AppConfig appConfig;
-    private final DatabasePersistence persistence;
+public enum Permissions {
 
     /**
-     * Constructs this object.
-     *
-     * @param appConfig The {@link AppConfig}
-     * @param persistence The persistence layer to draw from
+     * The ability to add a download to the system.
      */
-    @Inject
-    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
-        this.appConfig = appConfig;
-        this.persistence = persistence;
-    }
-
+    ADD_DOWNLOAD,
     /**
-     * {@inheritDoc}
+     * The ability to resync with any available Maven repositories.
      */
-    @Override
-    public List<AppConfig.Product> getAllProducts() {
-        return this.appConfig.getProducts();
-    }
-
+    RESYNC,
     /**
-     * {@inheritDoc}
+     * The ability to edit the changelog of any entry.
      */
-    @Override
-    public List<Downloadable> retrieve(DownloadableQuery query) {
-        return ImmutableList.of();
-    }
+    EDIT_CHANGELOG,
+    /**
+     * The ability to mark a build as broken.
+     */
+    MARK_BROKEN
 
 }

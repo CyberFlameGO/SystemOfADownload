@@ -22,49 +22,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.auth;
+package org.spongepowered.downloads.auth.subject;
 
 import java.util.Collection;
 import java.util.EnumSet;
 
 /**
- * Represents the data and permissions received from the Auth service.
+ * A base implementation of a {@link Subject}.
  */
-public final class AuthSubject {
+public abstract class AbstractSubject implements Subject {
 
-    private final String userid;
-    private final String accessToken;
-    private final EnumSet<Permissions> permissions;
+    protected final EnumSet<Permissions> permissions;
 
     /**
-     * Constructs this AuthSubject.
+     * Constructs this {@link AbstractSubject}.
      *
-     * @param userid The user ID
-     * @param accessToken The user's authorisation token
-     * @param permissions The set of permissions they have
+     * @param permissions The permissions for this subject
      */
-    public AuthSubject(String userid, String accessToken, Collection<Permissions> permissions) {
-        this.userid = userid;
-        this.accessToken = accessToken;
+    public AbstractSubject(Collection<Permissions> permissions) {
         this.permissions = EnumSet.copyOf(permissions);
-    }
-
-    /**
-     * Gets the User ID of this user.
-     *
-     * @return The user ID
-     */
-    public String getUserid() {
-        return this.userid;
-    }
-
-    /**
-     * Gets the user's auth token.
-     *
-     * @return The user auth token
-     */
-    public String getAccessToken() {
-        return this.accessToken;
     }
 
     /**
@@ -72,6 +48,7 @@ public final class AuthSubject {
      *
      * @return The permissions
      */
+    @Override
     public EnumSet<Permissions> getPermissions() {
         return this.permissions;
     }
@@ -83,6 +60,7 @@ public final class AuthSubject {
      * @param permissions The permissions to check.
      * @return true if all permissions are granted.
      */
+    @Override
     public boolean hasPermission(Permissions[] permissions) {
         for (Permissions permission : permissions) {
              if (!this.permissions.contains(permission)) {

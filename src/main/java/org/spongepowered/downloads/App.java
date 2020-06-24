@@ -24,24 +24,22 @@
  */
 package org.spongepowered.downloads;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.inject.Guice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.graphql.GraphQLRoutes;
+import org.spongepowered.downloads.exception.StatusCodeException;
 import org.spongepowered.downloads.guice.InjectorModule;
-import org.spongepowered.downloads.rest.RESTRoutesV1;
-import org.spongepowered.downloads.rest.RESTRoutesV2;
+import spark.Spark;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * The entry point to the application
+ * The entry point to the application.
  */
 public class App {
 
@@ -62,6 +60,13 @@ public class App {
             // so we need to do no more here, and we won't need the injector
             // once done.
             Guice.createInjector(new InjectorModule(gson, load(gson), logger));
+
+            // If a StatusCodeException is raised, we just halt with the given status code.
+            // We may want to improve this at some point, for now, this will do.
+            Spark.exception(
+                    StatusCodeException.class,
+                    ((exception, request, response) ->
+                            Spark.halt(exception.statusCode(), exception.getMessage())));
         } catch (Throwable e) {
             logger.error("Unable to start server: {}", e.getMessage());
             e.printStackTrace(System.err);

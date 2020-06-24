@@ -22,48 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.auth;
-
-import org.spongepowered.downloads.exception.AuthenticationFailedException;
-
-import java.util.Optional;
+package org.spongepowered.downloads.exception;
 
 /**
- * Contains authentication methods.
+ * An exception that suggests the status code to return.
  */
-public interface Authentication {
+public class NotFoundException extends StatusCodeException {
 
     /**
-     * Uses the given token to authenticate against the auth service.
+     * The status code to return for this error.
      *
-     * @param authToken The token provided by the OAuth authentication service
-     *      to pass to the service to complete authentication.
-     * @return The auth subject
-     * @throws AuthenticationFailedException if authentication failed
+     * @return The status code to return
      */
-    AuthSubject authenticate(String authToken) throws AuthenticationFailedException;
-
-    /**
-     * Reobtains the {@link AuthSubject} for a given access token.
-     *
-     * @param accessToken The access token
-     * @return The {@link AuthSubject}, if the token is still valid
-     */
-    Optional<AuthSubject> refresh(String accessToken);
-
-    /**
-     * Destroys the given token, effectively a "log out".
-     *
-     * @param accessToken The token.
-     */
-    void destroyToken(String accessToken);
-
-    /**
-     * Tests whether the given token is still valid.
-     *
-     * @param accessToken The token
-     * @return if the token is valid.
-     */
-    boolean isTokenValid(String accessToken);
+    public int statusCode() {
+        return 404;
+    }
 
 }

@@ -26,34 +26,14 @@ package org.spongepowered.downloads.guice;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.slf4j.Logger;
-import org.spongepowered.downloads.Constants;
-import org.spongepowered.downloads.auth.Authentication;
 import org.spongepowered.downloads.auth.annotation.Authorize;
-import org.spongepowered.downloads.exception.AuthenticationFailedException;
+import org.spongepowered.downloads.auth.subject.Subject;
 import org.spongepowered.downloads.exception.AuthorisationFailedException;
-import spark.Request;
 
 /**
  * Intercepts {@link Authorize} decorated methods.
  */
 public class AuthorizationMethodInterceptor implements MethodInterceptor {
-
-    private final Authentication authentication;
-    private final Logger logger;
-
-    /**
-     * Constructs this instance.
-     *
-     * @param logger The logger
-     * @param authentication The {@link Authentication} instance
-     */
-    public AuthorizationMethodInterceptor(
-            Logger logger,
-            Authentication authentication) {
-        this.logger = logger;
-        this.authentication = authentication;
-    }
 
     /**
      * The intercepting method.
@@ -65,30 +45,26 @@ public class AuthorizationMethodInterceptor implements MethodInterceptor {
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         // We need the request object, if we don't have it, we'll just proceed.
-        Request request = null;
-        for (var parameter : invocation.getArguments()) {
-            if (parameter instanceof Request) {
-                request = (Request) parameter;
+        Subject subject = null;
+        var method = invocation.getMethod();
+        var parameters = method.getParameters();
+        var foundParameter = false;
+        for (int i = 0; i < parameters.length; ++i) {
+            if (Subject.class.isAssignableFrom(parameters[i].getType())) {
+                subject = ((Subject) invocation.getArguments()[i]);
+                foundParameter = true;
                 break;
             }
         }
 
         // If we do not have a request object, then we proceed.
-        if (request == null) {
+        if (!foundParameter) {
             return invocation.proceed();
         }
 
-        // Get the access token
-        var accessToken = request.headers(Constants.X_ACCESS_TOKEN_HEADER);
-        if (accessToken == null || accessToken.isEmpty()) {
-            // we clearly don't have authorisation
-            throw new AuthenticationFailedException();
-        }
-
         // Check the access token
-        var authSubject = this.authentication.refresh(accessToken).orElseThrow(AuthenticationFailedException::new);
         var authorize = invocation.getMethod().getAnnotation(Authorize.class);
-        if (authSubject.hasPermission(authorize.value())) {
+        if (subject.hasPermission(authorize.value())) {
             return invocation.proceed();
         }
         throw new AuthorisationFailedException();

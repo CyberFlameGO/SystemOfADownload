@@ -25,12 +25,19 @@
 package org.spongepowered.downloads.rest;
 
 import com.google.inject.Inject;
-import org.spongepowered.downloads.buisness.metadata.Metadata;
+import org.spongepowered.downloads.buisness.Actions;
+import org.spongepowered.downloads.exception.NotFoundException;
+import org.spongepowered.downloads.pojo.data.Downloadable;
+import org.spongepowered.downloads.pojo.data.Project;
+import org.spongepowered.downloads.pojo.query.DownloadableQuery;
 import org.spongepowered.downloads.rest.objects.v1.BasicProject;
+import org.spongepowered.downloads.rest.objects.v1.Download;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
 
+import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -38,23 +45,28 @@ import java.util.stream.Collectors;
  */
 public class RESTRoutesV1 {
 
-    private final Metadata metadata;
+    private final Actions actions;
 
     /**
      * Creates this instance.
+     *
+     * @param actions The {@link Actions} business layer
      */
     @Inject
-    public RESTRoutesV1(Metadata metadata) {
-        this.metadata = metadata;
+    public RESTRoutesV1(Actions actions) {
+        this.actions = actions;
 
         // Temporary route for testing the route works.
         Spark.get("/v1/greet", ((request, response) -> "Hello"));
 
         Spark.get("/v1/projects", this::getAllProjects);
         Spark.get("/v1/:groupId/:artifactId", this::getProject);
-        Spark.get("/v1/:groupId/:artifactId/downloads", this::getProjectDownloads);
-        Spark.get("/v1/:groupId/:artifactId/downloads/:version", this::getProjectDownloadVersion);
-        Spark.get("/v1/:groupId/:artifactId/downloads/recommended", this::getProjectDownloadRecommended);
+        Spark.get("/v1/:groupId/:artifactId/downloads",
+                this::getProjectDownloads);
+        Spark.get("/v1/:groupId/:artifactId/downloads/:version",
+                this::getProjectDownloadVersion);
+        Spark.get("/v1/:groupId/:artifactId/downloads/recommended",
+                this::getProjectDownloadRecommended);
     }
 
     /**
@@ -64,9 +76,9 @@ public class RESTRoutesV1 {
      * @param response The {@link Response}
      * @return The response.
      */
-    public Object getAllProjects(Request request, Response response) {
+    public Collection<BasicProject> getAllProjects(Request request, Response response) {
         setCommonResponseParameters(response);
-        return this.metadata.getAllProducts().stream().map(x -> new BasicProject(x.getGroupid(), x.getArtifactid())).collect(Collectors.toList());
+        return this.actions.getAllProjects().stream().map(this::translate).collect(Collectors.toList());
     }
 
     /**
@@ -76,10 +88,11 @@ public class RESTRoutesV1 {
      * @param response The {@link Response}
      * @return The response.
      */
-    // TODO: Implement
-    public Object getProject(Request request, Response response) {
+    public BasicProject getProject(Request request, Response response) {
         setCommonResponseParameters(response);
-        return this.metadata.getAllProducts().stream().map(x -> new BasicProject(x.getGroupid(), x.getArtifactid())).collect(Collectors.toList());
+        return getProject(request)
+                .map(this::translate)
+                .orElseThrow(NotFoundException::new);
     }
 
     /**
@@ -89,10 +102,12 @@ public class RESTRoutesV1 {
      * @param response The {@link Response}
      * @return The response.
      */
-    // TODO: Implement
-    public Object getProjectDownloads(Request request, Response response) {
+    // type=stable&version=5&minecraft=1.10.2&forge=13.19.0.2157&limit=100&until=&since=&changelog=
+    public Collection<Download> getProjectDownloads(Request request, Response response) {
         setCommonResponseParameters(response);
-        return this.metadata.getAllProducts().stream().map(x -> new BasicProject(x.getGroupid(), x.getArtifactid())).collect(Collectors.toList());
+        var project = getProject(request).orElseThrow(NotFoundException::new);
+        return this.actions.getDownloads(new DownloadableQuery(project.getId(), null, false)).stream()
+                .map(this::translate).collect(Collectors.toList());
     }
 
     /**
@@ -102,10 +117,12 @@ public class RESTRoutesV1 {
      * @param response The {@link Response}
      * @return The response.
      */
-    // TODO: Implement
-    public Object getProjectDownloadVersion(Request request, Response response) {
+    public Download getProjectDownloadVersion(Request request, Response response) {
         setCommonResponseParameters(response);
-        return this.metadata.getAllProducts().stream().map(x -> new BasicProject(x.getGroupid(), x.getArtifactid())).collect(Collectors.toList());
+        var project = getProject(request).orElseThrow(NotFoundException::new);
+        var version = request.params(":version");
+        return this.actions.getDownloads(new DownloadableQuery(project.getId(), version, false)).stream()
+                .map(this::translate).findFirst().orElseThrow(NotFoundException::new);
     }
 
     /**
@@ -115,15 +132,36 @@ public class RESTRoutesV1 {
      * @param response The {@link Response}
      * @return The response.
      */
-    // TODO: Implement
-    public Object getProjectDownloadRecommended(Request request, Response response) {
+    // type=stable&version=5&minecraft=1.10.2&forge=13.19.0.2157
+    // TODO: Implement properly
+    public Download getProjectDownloadRecommended(Request request, Response response) {
         setCommonResponseParameters(response);
-        return this.metadata.getAllProducts().stream().map(x -> new BasicProject(x.getGroupid(), x.getArtifactid())).collect(Collectors.toList());
+        var project = getProject(request).orElseThrow(NotFoundException::new);
+        return this.actions.getDownloads(new DownloadableQuery(project.getId(), null, true)).stream()
+                .map(this::translate).findFirst().orElseThrow(NotFoundException::new);
     }
 
     private void setCommonResponseParameters(Response response) {
         response.header("Content-Type", "application/json");
         response.status(200);
+    }
+
+    private Optional<Project> getProject(Request request) {
+        var groupId = request.params(":groupId");
+        var artifactId = request.params(":artifactId");
+        return this.actions
+                .getAllProjects()
+                .stream()
+                .filter(x -> x.getGroupId().equals(groupId) && x.getArtifactId().equals(artifactId))
+                .findFirst();
+    }
+
+    private BasicProject translate(Project project) {
+        return new BasicProject(project.getGroupId(), project.getArtifactId());
+    }
+
+    private Download translate(Downloadable downloadable) {
+        return new Download(downloadable);
     }
 
 }

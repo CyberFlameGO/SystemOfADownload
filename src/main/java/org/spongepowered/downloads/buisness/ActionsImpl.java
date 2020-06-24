@@ -22,51 +22,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.metadata;
+package org.spongepowered.downloads.buisness;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
-import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.database.DatabasePersistence;
+import org.spongepowered.downloads.auth.subject.Subject;
 import org.spongepowered.downloads.pojo.data.Downloadable;
+import org.spongepowered.downloads.pojo.data.Project;
 import org.spongepowered.downloads.pojo.query.DownloadableQuery;
 
-import java.util.List;
+import java.net.URL;
+import java.util.Collection;
+import java.util.Optional;
 
-/**
- * Implements {@link Metadata}.
- */
-public class MetadataImpl implements Metadata {
+public class ActionsImpl implements Actions {
 
-    private final AppConfig appConfig;
-    private final DatabasePersistence persistence;
-
-    /**
-     * Constructs this object.
-     *
-     * @param appConfig The {@link AppConfig}
-     * @param persistence The persistence layer to draw from
-     */
-    @Inject
-    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
-        this.appConfig = appConfig;
-        this.persistence = persistence;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public List<AppConfig.Product> getAllProducts() {
-        return this.appConfig.getProducts();
+    public Collection<Project> getAllProjects() {
+        return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public List<Downloadable> retrieve(DownloadableQuery query) {
-        return ImmutableList.of();
+    public Optional<Project> getProject(String projectId) {
+        return Optional.empty();
     }
+
+    @Override
+    public Collection<Downloadable> getDownloads(DownloadableQuery downloadableQuery) {
+        return null;
+    }
+
+    @Override
+    public Downloadable addDownload(Subject subject, String projectId, URL downloadLocation) {
+        return null;
+    }
+
+    @Override
+    public void resyncWithMaven(Subject subject, String projectId) {
+
+    }
+
+    @Override
+    public void markBroken(Subject subject, String projectId, int downloadId, boolean isBroken) {
+
+    }
+
+    @Override
+    public void editChangelog(Subject subject, String projectId, int downloadId, String changelog) {
+
+    }
+
 
 }

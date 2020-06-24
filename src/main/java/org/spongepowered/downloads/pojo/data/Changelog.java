@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a changelog
+ * Represents a changelog.
  */
 public class Changelog {
 
@@ -37,7 +37,7 @@ public class Changelog {
     private final Map<String, Changelog> submodules;
 
     /**
-     * Constructs this changelog
+     * Constructs this changelog.
      *
      * @param entries The changelog entries
      * @param submodules Any submodules
@@ -66,7 +66,7 @@ public class Changelog {
     }
 
     /**
-     * An entry in the changelog
+     * An entry in the changelog.
      */
     public static class Entry {
 
@@ -75,6 +75,14 @@ public class Changelog {
         private final String author;
         private final ZonedDateTime dateTime;
 
+        /**
+         * Constructs this entry.
+         *
+         * @param commit The commit
+         * @param message The message
+         * @param author The author
+         * @param dateTime The commit time
+         */
         public Entry(String commit, String message, String author, ZonedDateTime dateTime) {
             this.commit = commit;
             this.message = message;

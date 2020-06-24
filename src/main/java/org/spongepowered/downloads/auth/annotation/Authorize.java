@@ -24,25 +24,31 @@
  */
 package org.spongepowered.downloads.auth.annotation;
 
-import org.spongepowered.downloads.auth.Permissions;
+import org.spongepowered.downloads.auth.subject.AuthSubject;
+import org.spongepowered.downloads.auth.subject.Permissions;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
  * Indicates that the specified {@link Permissions} are required to execute the
- * decorated method. To be used on business layer methods.
+ * decorated method. To be used on business layer methods. They must contain a
+ * {@link AuthSubject} parameter.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+@Inherited
 public @interface Authorize {
 
     /**
      * The {@link Permissions} that the decorated method requires.
+     *
+     * @return The permission values
      */
     Permissions[] value();
 

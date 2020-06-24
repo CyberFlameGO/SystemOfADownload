@@ -22,51 +22,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.metadata;
+package org.spongepowered.downloads.auth.provider;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
-import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.database.DatabasePersistence;
-import org.spongepowered.downloads.pojo.data.Downloadable;
-import org.spongepowered.downloads.pojo.query.DownloadableQuery;
+import org.spongepowered.downloads.auth.subject.AuthSubject;
+import org.spongepowered.downloads.auth.subject.Subject;
+import org.spongepowered.downloads.exception.AuthenticationFailedException;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
- * Implements {@link Metadata}.
+ * Contains authentication methods.
  */
-public class MetadataImpl implements Metadata {
-
-    private final AppConfig appConfig;
-    private final DatabasePersistence persistence;
+public interface OAuthAuthenticationProvider {
 
     /**
-     * Constructs this object.
+     * Uses the given token to authenticate against the auth service.
      *
-     * @param appConfig The {@link AppConfig}
-     * @param persistence The persistence layer to draw from
+     * @param authToken The token provided by the OAuth authentication service
+     *      to pass to the service to complete authentication.
+     * @return The auth subject
+     * @throws AuthenticationFailedException if authentication failed
      */
-    @Inject
-    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
-        this.appConfig = appConfig;
-        this.persistence = persistence;
-    }
+    AuthSubject authenticate(String authToken) throws AuthenticationFailedException;
 
     /**
-     * {@inheritDoc}
+     * Reobtains the {@link AuthSubject} for a given access token.
+     *
+     * @param accessToken The access token
+     * @return The {@link AuthSubject}, if the token is still valid
      */
-    @Override
-    public List<AppConfig.Product> getAllProducts() {
-        return this.appConfig.getProducts();
-    }
+    Optional<AuthSubject> refresh(String accessToken);
 
     /**
-     * {@inheritDoc}
+     * Destroys the given token, effectively a "log out".
+     *
+     * @param accessToken The token.
      */
-    @Override
-    public List<Downloadable> retrieve(DownloadableQuery query) {
-        return ImmutableList.of();
-    }
+    void destroyToken(String accessToken);
+
+    /**
+     * Tests whether the given token is still valid.
+     *
+     * @param accessToken The token
+     * @return if the token is valid.
+     */
+    boolean isTokenValid(String accessToken);
 
 }

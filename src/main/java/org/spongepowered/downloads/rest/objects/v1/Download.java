@@ -22,51 +22,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.metadata;
+package org.spongepowered.downloads.rest.objects.v1;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
-import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.database.DatabasePersistence;
 import org.spongepowered.downloads.pojo.data.Downloadable;
-import org.spongepowered.downloads.pojo.query.DownloadableQuery;
-
-import java.util.List;
 
 /**
- * Implements {@link Metadata}.
+ * A REST v1 representation of a download.
  */
-public class MetadataImpl implements Metadata {
-
-    private final AppConfig appConfig;
-    private final DatabasePersistence persistence;
+public class Download {
 
     /**
-     * Constructs this object.
+     * Creates a {@link Download} from a {@link Downloadable}.
      *
-     * @param appConfig The {@link AppConfig}
-     * @param persistence The persistence layer to draw from
+     * @param downloadable The {@link Downloadable} to translate
      */
-    @Inject
-    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
-        this.appConfig = appConfig;
-        this.persistence = persistence;
-    }
+    public Download(Downloadable downloadable) {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<AppConfig.Product> getAllProducts() {
-        return this.appConfig.getProducts();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Downloadable> retrieve(DownloadableQuery query) {
-        return ImmutableList.of();
     }
 
 }

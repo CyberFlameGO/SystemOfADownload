@@ -25,6 +25,7 @@
 package org.spongepowered.downloads.rest;
 
 import com.google.inject.Inject;
+import org.spongepowered.downloads.buisness.Actions;
 import org.spongepowered.downloads.buisness.metadata.Metadata;
 
 /**
@@ -32,11 +33,16 @@ import org.spongepowered.downloads.buisness.metadata.Metadata;
  */
 public class RESTRoutesV2 {
 
-    private final Metadata metadata;
+    private final Actions actions;
 
+    /**
+     * Constructs this {@link RESTRoutesV2}.
+     *
+     * @param actions The {@link Actions}
+     */
     @Inject
-    public RESTRoutesV2(Metadata metadata) {
-        this.metadata = metadata;
+    public RESTRoutesV2(Actions actions) {
+        this.actions = actions;
     }
 
 }

@@ -28,7 +28,7 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 
 /**
- * Represents a download
+ * Represents a download.
  */
 public class Downloadable {
 

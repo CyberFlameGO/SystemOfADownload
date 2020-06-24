@@ -27,7 +27,7 @@ package org.spongepowered.downloads.exception;
 /**
  * An exception that suggests the status code to return.
  */
-public abstract class StatusCodeException extends Exception {
+public abstract class StatusCodeException extends RuntimeException {
 
     /**
      * The status code to return for this error.

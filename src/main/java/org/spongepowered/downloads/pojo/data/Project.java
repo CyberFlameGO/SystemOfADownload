@@ -22,13 +22,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.auth;
+package org.spongepowered.downloads.pojo.data;
 
-public enum Permissions {
+/**
+ * Represents a project.
+ */
+public class Project {
 
-    UPLOAD,
-    RESYNC,
-    EDIT_CHANGELOG,
+    private final String groupId;
+    private final String artifactId;
+    private final String id;
 
+    /**
+     * Constructs this instance.
+     *
+     * @param groupId The group ID of the project
+     * @param artifactId The artifact ID of the project
+     * @param id The ID of the project
+     */
+    public Project(String groupId, String artifactId, String id) {
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.id = id;
+    }
+
+    /**
+     * Gets the group ID.
+     *
+     * @return The group ID
+     */
+    public String getGroupId() {
+        return this.groupId;
+    }
+
+    /**
+     * Gets the artifact ID.
+     *
+     * @return The artifact ID
+     */
+    public String getArtifactId() {
+        return this.artifactId;
+    }
+
+    /**
+     * The ID of the project.
+     *
+     * @return The ID
+     */
+    public String getId() {
+        return this.id;
+    }
 
 }

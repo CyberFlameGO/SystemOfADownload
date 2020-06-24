@@ -22,51 +22,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.metadata;
+package org.spongepowered.downloads.auth.subject;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
-import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.database.DatabasePersistence;
-import org.spongepowered.downloads.pojo.data.Downloadable;
-import org.spongepowered.downloads.pojo.query.DownloadableQuery;
-
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Implements {@link Metadata}.
+ * Represents the data and permissions received from the Auth service.
  */
-public class MetadataImpl implements Metadata {
+public final class AuthSubject extends AbstractSubject {
 
-    private final AppConfig appConfig;
-    private final DatabasePersistence persistence;
+    private final String userid;
+    private final String accessToken;
 
     /**
-     * Constructs this object.
+     * Constructs this AuthSubject.
      *
-     * @param appConfig The {@link AppConfig}
-     * @param persistence The persistence layer to draw from
+     * @param userid The user ID
+     * @param accessToken The user's authorisation token
+     * @param permissions The set of permissions they have
      */
-    @Inject
-    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
-        this.appConfig = appConfig;
-        this.persistence = persistence;
+    public AuthSubject(String userid, String accessToken, Collection<Permissions> permissions) {
+        super(permissions);
+        this.userid = userid;
+        this.accessToken = accessToken;
     }
 
     /**
-     * {@inheritDoc}
+     * Gets the User ID of this user.
+     *
+     * @return The user ID
      */
-    @Override
-    public List<AppConfig.Product> getAllProducts() {
-        return this.appConfig.getProducts();
+    public String getUserid() {
+        return this.userid;
     }
 
     /**
-     * {@inheritDoc}
+     * Gets the user's auth token.
+     *
+     * @return The user auth token
      */
-    @Override
-    public List<Downloadable> retrieve(DownloadableQuery query) {
-        return ImmutableList.of();
+    public String getAccessToken() {
+        return this.accessToken;
     }
 
 }

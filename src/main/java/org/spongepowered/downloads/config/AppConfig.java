@@ -81,7 +81,8 @@ public class AppConfig {
     public Product getProduct(String name) throws IllegalArgumentException {
         Product product = this.products.get(name);
         if (product == null) {
-            throw new IllegalArgumentException("Product was provided that is not supported by this indexer.");
+            throw new IllegalArgumentException(
+                    "Product was provided that is not supported by this indexer.");
         }
         return product;
     }

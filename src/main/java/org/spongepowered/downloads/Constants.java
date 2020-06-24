@@ -25,7 +25,7 @@
 package org.spongepowered.downloads;
 
 /**
- * Constants used in this application
+ * Constants used in this application.
  */
 public final class Constants {
 

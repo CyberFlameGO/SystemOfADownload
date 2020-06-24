@@ -45,7 +45,7 @@ public interface Metadata {
 
     /**
      * Given a {@link DownloadableQuery}, retrieves the appropriate
-     * {@link Downloadable}s
+     * {@link Downloadable}s.
      *
      * @param query The {@link DownloadableQuery}
      * @return The list of {@link Downloadable}s

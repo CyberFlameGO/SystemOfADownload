@@ -30,34 +30,46 @@ import graphql.ExecutionInput;
 import graphql.GraphQL;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
-import org.spongepowered.downloads.buisness.maven.Maven;
-import org.spongepowered.downloads.buisness.metadata.Metadata;
+import org.spongepowered.downloads.Constants;
+import org.spongepowered.downloads.auth.provider.APIKeyAuthenticationProvider;
+import org.spongepowered.downloads.auth.provider.OAuthAuthenticationProvider;
+import org.spongepowered.downloads.auth.subject.Subject;
+import org.spongepowered.downloads.buisness.Actions;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
 
+import java.util.Optional;
+
 /**
- * Contains the GraphQL routes
+ * Contains the GraphQL routes.
  */
 public class GraphQLRoutes {
 
     private final Gson gson;
-    private final Metadata metadata;
-    private final Maven maven;
     private final GraphQLSchema schema;
+    private final APIKeyAuthenticationProvider apiKeyAuthProvider;
+    private final OAuthAuthenticationProvider spongeAuthProvider;
+    private final Actions actions;
 
     /**
      * Creates this instance.
      *
      * @param gson The {@link Gson} instance for the app
-     * @param metadata The {@link Metadata} business logic layer
-     * @param maven The {@link Maven} business logic layer
+     * @param apiKeyAuthProvider The {@link APIKeyAuthenticationProvider}
+     * @param spongeAuthProvider The {@link OAuthAuthenticationProvider}
+     * @param actions The {@link Actions} entry point
      */
     @Inject
-    public GraphQLRoutes(Gson gson, Metadata metadata, Maven maven) {
+    public GraphQLRoutes(
+            Gson gson,
+            APIKeyAuthenticationProvider apiKeyAuthProvider,
+            OAuthAuthenticationProvider spongeAuthProvider,
+            Actions actions) {
         this.gson = gson;
-        this.metadata = metadata;
-        this.maven = maven;
+        this.apiKeyAuthProvider = apiKeyAuthProvider;
+        this.spongeAuthProvider = spongeAuthProvider;
+        this.actions = actions;
         this.schema = createV1Schema();
         Spark.post("/graphql", this::process);
     }
@@ -70,6 +82,15 @@ public class GraphQLRoutes {
      * @return The object to return
      */
     public Object process(Request request, Response response) {
+        final var accessTokenHeader = request.headers(Constants.X_ACCESS_TOKEN_HEADER);
+        final Optional<? extends Subject> subject;
+        if (accessTokenHeader == null || accessTokenHeader.isEmpty()) {
+            subject = Optional.empty();
+        } else {
+            subject = this.spongeAuthProvider
+                    .refresh(request.headers(Constants.X_ACCESS_TOKEN_HEADER));
+        }
+
         response.type("application/json");
         final String body = request.body();
         final GraphQLRequest graphQLRequest = this.gson.fromJson(body, GraphQLRequest.class);
@@ -78,13 +99,14 @@ public class GraphQLRoutes {
 
         final ExecutionInput.Builder builder = ExecutionInput.newExecutionInput()
                 .query(graphQLRequest.getQuery());
+
         graphQLRequest.getVariables().ifPresent(builder::variables);
         graphQLRequest.getOperationName().ifPresent(builder::operationName);
         return graphQL.execute(builder);
     }
 
     /**
-     * Creates the v1 GraphQL schema for this application
+     * Creates the v1 GraphQL schema for this application.
      *
      * @return The {@link GraphQLSchema}
      */

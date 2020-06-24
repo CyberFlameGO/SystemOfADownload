@@ -25,7 +25,7 @@
 package org.spongepowered.downloads.rest.objects.v1;
 
 /**
- * Represents a project
+ * Represents a project in REST V1.
  */
 public class BasicProject {
 

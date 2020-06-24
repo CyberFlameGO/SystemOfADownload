@@ -24,11 +24,29 @@
  */
 package org.spongepowered.downloads.pojo.query;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.downloads.pojo.data.Downloadable;
 
 /**
  * Specifies which {@link Downloadable}s to obtain from the database.
  */
 public class DownloadableQuery {
+
+    private final String projectId;
+    @Nullable private final String version;
+    private final boolean recommendedOnly;
+
+    /**
+     * Constructs this query object.
+     *
+     * @param projectId The project ID.
+     * @param version The version, if a specific version is required
+     * @param recommendedOnly If only recommended versions are to be returned
+     */
+    public DownloadableQuery(String projectId, @Nullable String version, boolean recommendedOnly) {
+        this.projectId = projectId;
+        this.version = version;
+        this.recommendedOnly = recommendedOnly;
+    }
 
 }

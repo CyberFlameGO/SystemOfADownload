@@ -22,51 +22,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.downloads.buisness.metadata;
+package org.spongepowered.downloads.auth.provider;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
-import org.spongepowered.downloads.config.AppConfig;
-import org.spongepowered.downloads.database.DatabasePersistence;
-import org.spongepowered.downloads.pojo.data.Downloadable;
-import org.spongepowered.downloads.pojo.query.DownloadableQuery;
+import org.spongepowered.downloads.auth.subject.APISubject;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
- * Implements {@link Metadata}.
+ * Validates a token, returning the appropriate {@link APISubject}.
  */
-public class MetadataImpl implements Metadata {
-
-    private final AppConfig appConfig;
-    private final DatabasePersistence persistence;
+public interface APIKeyAuthenticationProvider {
 
     /**
-     * Constructs this object.
+     * Obtains the {@link APISubject} from the given token.
      *
-     * @param appConfig The {@link AppConfig}
-     * @param persistence The persistence layer to draw from
+     * @param token The token
+     * @return The {@link APISubject}, if valid.
      */
-    @Inject
-    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
-        this.appConfig = appConfig;
-        this.persistence = persistence;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<AppConfig.Product> getAllProducts() {
-        return this.appConfig.getProducts();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Downloadable> retrieve(DownloadableQuery query) {
-        return ImmutableList.of();
-    }
+    Optional<APISubject> validate(String token);
 
 }
