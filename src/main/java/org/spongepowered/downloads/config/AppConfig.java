@@ -31,25 +31,38 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * The application configuration object.
  */
+@ConfigSerializable
 public class AppConfig {
 
-    @JsonAdapter(PathTypeAdapter.class)
+    @Setting("tempDirectory")
     private Path tempDirectory = Path.of("tmp");
 
-    @JsonAdapter(PathTypeAdapter.class)
+    @Setting("repoDirectory")
     private Path repoDirectory = Path.of("repoCache");
-    private Database database;
-    private Map<String, Product> products;
+
+    @Setting("database")
+    private Database database = new Database();
+
+    @Setting("maven")
+    private MavenRepo maven = new MavenRepo();
+
+    @Setting("products")
+    private Map<String, Product> products = new HashMap<>();
 
     /**
      * Gets the temporary directory this app should use for any temporary
@@ -78,8 +91,8 @@ public class AppConfig {
      * @throws IllegalArgumentException if the product supplied is not supported
      *      by this indexer.
      */
-    public Product getProduct(String name) throws IllegalArgumentException {
-        Product product = this.products.get(name);
+    public Product getProduct(final String name) throws IllegalArgumentException {
+        final Product product = this.products.get(name);
         if (product == null) {
             throw new IllegalArgumentException(
                     "Product was provided that is not supported by this indexer.");
@@ -105,12 +118,20 @@ public class AppConfig {
         return this.repoDirectory;
     }
 
+    public MavenRepo getMaven() {
+        return this.maven;
+    }
+
     /**
      * Contains the Database configuration.
      */
+    @ConfigSerializable
     public static class Database {
 
+        @Setting("jdbcUrl")
         private String jdbcUrl;
+
+        @Setting("useDummy")
         private boolean useDummy;
 
         /**
@@ -132,17 +153,68 @@ public class AppConfig {
         }
     }
 
+    @ConfigSerializable
+    public static final class MavenRepo {
+
+        @Setting("url")
+        private String url = "https://repo-new.spongepowered.org";
+
+        @Setting("restEndpoint")
+        private String restEndpoint = "/service/rest";
+
+        @Setting("standardRepo")
+        private String standardRepo = "maven-public";
+
+        @Setting("releaseRepos")
+        private List<String> releaseRepos = Collections.singletonList("maven-releases");
+
+        public String getUrl() {
+            return this.url;
+        }
+
+        public String getRestEndpoint() {
+            return this.restEndpoint;
+        }
+
+        public String getStandardRepo() {
+            return this.standardRepo;
+        }
+
+        public List<String> getReleaseRepos() {
+            return this.releaseRepos;
+        }
+
+    }
+
     /**
      * Represents a product that is accepted by this indexer.
      */
-    public static class Product {
+    @ConfigSerializable
+    public static final class Product {
 
-        @SerializedName("major-version-override")
-        private Map<String, Product> majorVersionOverride = ImmutableMap.of();
+        public Product() {
+        };
+
+        public Product(final String artifactid) {
+            this.artifactid = artifactid;
+        }
+
+        @Setting("major-version-override")
+        private Map<String, Product> majorVersionOverride = Collections.emptyMap();
+
+        @Setting("v1rest")
         private Map<String, String> v1rest;
+
+        @Setting("name")
         private String name;
+
+        @Setting("repo")
         private String repo;
+
+        @Setting("groupid")
         private String groupid;
+
+        @Setting("artifactid")
         private String artifactid;
 
         /**
@@ -152,7 +224,7 @@ public class AppConfig {
          * @return The overrides, if any
          */
         public Map<String, Product> getMajorVersionOverride() {
-            return majorVersionOverride;
+            return this.majorVersionOverride;
         }
 
         /**
@@ -201,19 +273,7 @@ public class AppConfig {
         public String getGroupid() {
             return this.groupid;
         }
-    }
 
-    private static class PathTypeAdapter extends TypeAdapter<Path> {
-
-        @Override
-        public void write(JsonWriter out, Path value) throws IOException {
-            // we're not using this
-        }
-
-        @Override
-        public Path read(JsonReader in) throws IOException {
-            return Path.of(in.nextString());
-        }
     }
 
 }

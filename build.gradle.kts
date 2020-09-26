@@ -19,6 +19,9 @@ dependencies {
     implementation("com.graphql-java:graphql-java:15.0")
     implementation("com.sparkjava:spark-core:2.8.0")
     implementation("com.google.code.gson:gson:2.8.6")
+    implementation("org.spongepowered:configurate-gson:3.7.1") {
+        exclude(group = "com.google.inject", module = "guice")
+    }
 
     // Update this to 4.2.4 or 4.3, whatever comes next once we can.
     // Currently getting "illegal reflective access operation" - this

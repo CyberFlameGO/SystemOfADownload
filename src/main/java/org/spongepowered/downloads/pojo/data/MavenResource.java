@@ -24,6 +24,32 @@
  */
 package org.spongepowered.downloads.pojo.data;
 
-public class MavenResource {
+import java.util.Map;
+import java.util.Set;
+
+public final class MavenResource {
+
+    private final boolean isRelease;
+    private final String version;
+    private final Set<Download> downloadSet;
+
+    public MavenResource(final boolean isRelease, final String version, final Set<Download> downloadSet) {
+        this.isRelease = isRelease;
+        this.version = version;
+        this.downloadSet = downloadSet;
+    }
+
+    public static final class Download {
+
+        private final String identifier;
+        private final String downloadUrl;
+        private final Map<String, String> checksums;
+
+        public Download(final String identifier, final String downloadUrl, final Map<String, String> checksums) {
+            this.identifier = identifier;
+            this.downloadUrl = downloadUrl;
+            this.checksums = checksums;
+        }
+    }
 
 }

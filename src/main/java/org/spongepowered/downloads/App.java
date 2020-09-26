@@ -24,9 +24,11 @@
  */
 package org.spongepowered.downloads;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.inject.Guice;
+import ninja.leaping.configurate.gson.GsonConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.downloads.config.AppConfig;
@@ -35,7 +37,6 @@ import org.spongepowered.downloads.guice.InjectorModule;
 import spark.Spark;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -44,7 +45,7 @@ import java.nio.file.Path;
 public class App {
 
     private static final String CONFIG_LOCATION = "appconfig.json";
-    private static final Logger logger = LoggerFactory.getLogger(App.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
 
     /**
      * Entrypoint for the app.
@@ -59,7 +60,7 @@ public class App {
             // "Eager Singletons". These will initialise the application for us
             // so we need to do no more here, and we won't need the injector
             // once done.
-            Guice.createInjector(new InjectorModule(gson, load(gson), logger));
+            Guice.createInjector(new InjectorModule(gson, load(), App.LOGGER));
 
             // If a StatusCodeException is raised, we just halt with the given status code.
             // We may want to improve this at some point, for now, this will do.
@@ -67,8 +68,8 @@ public class App {
                     StatusCodeException.class,
                     ((exception, request, response) ->
                             Spark.halt(exception.statusCode(), exception.getMessage())));
-        } catch (Throwable e) {
-            logger.error("Unable to start server: {}", e.getMessage());
+        } catch (final Throwable e) {
+            App.LOGGER.error("Unable to start server: {}", e.getMessage());
             e.printStackTrace(System.err);
         }
     }
@@ -76,23 +77,24 @@ public class App {
     /**
      * Loads the file and populates a new {@link AppConfig}.
      *
-     * @param gson The {@link Gson} instance to use to load the config
      * @return The {@link AppConfig}
      * @throws IOException if the file could not be loaded
-     * @throws JsonSyntaxException if the file does not contain valid Json
+     * @throws ObjectMappingException if the file could not be mapped
      */
-    public static AppConfig load(Gson gson) throws IOException, JsonSyntaxException {
-        final var configPath = Path.of(CONFIG_LOCATION);
-        if (Files.notExists(configPath)) {
-            // Copy the default config to the current directory.
-            try (var inputStream = AppConfig.class.getResourceAsStream("/appconfig.json")) {
-                Files.copy(inputStream, configPath);
-            }
-        }
+    public static AppConfig load() throws IOException, ObjectMappingException {
+        final var configPath = Path.of(App.CONFIG_LOCATION);
+        final var configLoader = GsonConfigurationLoader.builder()
+                .setPath(configPath)
+                .build();
+        final var node = configLoader.load();
 
-        try (var configFileStream = Files.newBufferedReader(configPath)) {
-            return gson.fromJson(configFileStream, AppConfig.class);
-        }
+        // create the defaults and merge them in
+        final var configNode = configLoader.createEmptyNode();
+        configNode.setValue(TypeToken.of(AppConfig.class), new AppConfig());
+        node.mergeValuesFrom(configNode);
+
+        configLoader.save(node);
+        return configNode.getValue(TypeToken.of(AppConfig.class));
     }
 
 }

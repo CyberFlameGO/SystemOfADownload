@@ -30,16 +30,12 @@ import graphql.ExecutionInput;
 import graphql.GraphQL;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
-import org.spongepowered.downloads.Constants;
 import org.spongepowered.downloads.auth.provider.APIKeyAuthenticationProvider;
 import org.spongepowered.downloads.auth.provider.OAuthAuthenticationProvider;
-import org.spongepowered.downloads.auth.subject.Subject;
 import org.spongepowered.downloads.buisness.Actions;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
-
-import java.util.Optional;
 
 /**
  * Contains the GraphQL routes.

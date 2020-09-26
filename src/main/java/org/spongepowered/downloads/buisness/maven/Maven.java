@@ -28,6 +28,7 @@ import org.spongepowered.downloads.config.AppConfig;
 import org.spongepowered.downloads.pojo.data.MavenResource;
 
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Interacts with a Maven repository.
@@ -41,7 +42,7 @@ public interface Maven {
      * @param product The product
      * @return The {@link MavenResource}s.
      */
-    Set<MavenResource> getAllResources(AppConfig.Product product);
+    CompletableFuture<Set<MavenResource>> getAllResources(AppConfig.Product product);
 
     /**
      * Gets a specific resource from the target Maven server.
