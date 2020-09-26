@@ -39,6 +39,18 @@ public final class MavenResource {
         this.downloadSet = downloadSet;
     }
 
+    public boolean isRelease() {
+        return this.isRelease;
+    }
+
+    public String getVersion() {
+        return this.version;
+    }
+
+    public Set<Download> getDownloadSet() {
+        return this.downloadSet;
+    }
+
     public static final class Download {
 
         private final String identifier;
@@ -49,6 +61,18 @@ public final class MavenResource {
             this.identifier = identifier;
             this.downloadUrl = downloadUrl;
             this.checksums = checksums;
+        }
+
+        public String getIdentifier() {
+            return this.identifier;
+        }
+
+        public String getDownloadUrl() {
+            return this.downloadUrl;
+        }
+
+        public Map<String, String> getChecksums() {
+            return this.checksums;
         }
     }
 

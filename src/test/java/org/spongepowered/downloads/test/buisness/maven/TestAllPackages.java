@@ -13,11 +13,10 @@ public class TestAllPackages {
     @Test
     public void testWeGetSomethingBack() {
         final var defaultConfig = new AppConfig();
-        final var gson = new Gson();
 
-        final var sut = new MavenImpl(gson, defaultConfig);
+        final var sut = new MavenImpl(defaultConfig);
 
-        final Set<MavenResource> resources = sut.getAllResources(new AppConfig.Product("configurate-core")).join();
+        final Set<MavenResource> resources = sut.getAllResources(new AppConfig.Product("spongevanilla")).join();
 
         if (resources.isEmpty()) {
             throw new IllegalStateException("resources should not be empty.");
