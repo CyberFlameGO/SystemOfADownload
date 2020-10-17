@@ -67,7 +67,7 @@ public class InjectorModule extends AbstractModule {
      * @param appConfig The {@link AppConfig} that configures this application.
      * @param logger The {@link Logger} to use
      */
-    public InjectorModule(Gson gson, AppConfig appConfig, Logger logger) {
+    public InjectorModule(final Gson gson, final AppConfig appConfig, final Logger logger) {
         this.gson = gson;
         this.appConfig = appConfig;
         this.logger = logger;
@@ -75,51 +75,51 @@ public class InjectorModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(Gson.class).toInstance(this.gson);
-        bind(AppConfig.class).toInstance(this.appConfig);
-        bind(Logger.class).toInstance(this.logger);
+        this.bind(Gson.class).toInstance(this.gson);
+        this.bind(AppConfig.class).toInstance(this.appConfig);
+        this.bind(Logger.class).toInstance(this.logger);
 
         // Authentication
         // TODO: SpongeAuth
-        var authMethodInterceptor = new AuthorizationMethodInterceptor();
-        bind(OAuthAuthenticationProvider.class)
+        final var authMethodInterceptor = new AuthorizationMethodInterceptor();
+        this.bind(OAuthAuthenticationProvider.class)
                 .to(DummyOAuthAuthenticationProvider.class)
                 .in(Singleton.class);
-        bind(APIKeyAuthenticationProvider.class)
+        this.bind(APIKeyAuthenticationProvider.class)
                 .to(DummyAPIKeyAuthenticationProvider.class)
                 .in(Singleton.class);
 
         // Database
         if (this.appConfig.getDatabaseConfig().isUseDummy()) {
-            bind(DatabaseConnectionPool.class)
+            this.bind(DatabaseConnectionPool.class)
                     .to(DummyDatabaseConnectionPool.class)
                     .in(Singleton.class);
-            bind(DatabasePersistence.class)
+            this.bind(DatabasePersistence.class)
                     .to(DummyDatabasePersistence.class)
                     .in(Singleton.class);
         } else {
-            bind(DatabaseConnectionPool.class)
+            this.bind(DatabaseConnectionPool.class)
                     .toInstance(new HikariDatabaseConnectionPool(this.appConfig.getDatabaseConfig()));
-            bind(DatabasePersistence.class)
+            this.bind(DatabasePersistence.class)
                     .to(PostgresDatabasePersistence.class)
                     .in(Singleton.class);
         }
 
         // Business logic
-        bindInterceptor(
+        this.bindInterceptor(
                 Matchers.any(),
                 Matchers.annotatedWith(Authorize.class),
                 authMethodInterceptor);
-        bind(Metadata.class).to(MetadataImpl.class).in(Singleton.class);
-        bind(Maven.class).to(MavenImpl.class).in(Singleton.class);
-        bind(ChangelogGenerator.class).to(ChangelogGeneratorImpl.class).in(Singleton.class);
+        this.bind(Metadata.class).to(MetadataImpl.class).in(Singleton.class);
+        this.bind(Maven.class).to(MavenImpl.class).in(Singleton.class);
+        this.bind(ChangelogGenerator.class).to(ChangelogGeneratorImpl.class).in(Singleton.class);
 
         // Anything that contains Spark routes should be eager singletons, as this will
         // start the initialisation of the system and register the routes (if the routes
         // are registered in the constructors, as they should be!)
-        bind(RESTRoutesV1.class).asEagerSingleton();
-        bind(RESTRoutesV2.class).asEagerSingleton();
-        bind(GraphQLRoutes.class).asEagerSingleton();
+        this.bind(RESTRoutesV1.class).asEagerSingleton();
+        this.bind(RESTRoutesV2.class).asEagerSingleton();
+        this.bind(GraphQLRoutes.class).asEagerSingleton();
     }
 
 }

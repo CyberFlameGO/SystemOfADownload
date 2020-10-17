@@ -43,11 +43,11 @@ public class AuthorizationMethodInterceptor implements MethodInterceptor {
      * @throws Throwable for any exceptions that are thrown
      */
     @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
+    public Object invoke(final MethodInvocation invocation) throws Throwable {
         // We need the request object, if we don't have it, we'll just proceed.
         Subject subject = null;
-        var method = invocation.getMethod();
-        var parameters = method.getParameters();
+        final var method = invocation.getMethod();
+        final var parameters = method.getParameters();
         var foundParameter = false;
         for (int i = 0; i < parameters.length; ++i) {
             if (Subject.class.isAssignableFrom(parameters[i].getType())) {
@@ -63,7 +63,7 @@ public class AuthorizationMethodInterceptor implements MethodInterceptor {
         }
 
         // Check the access token
-        var authorize = invocation.getMethod().getAnnotation(Authorize.class);
+        final var authorize = invocation.getMethod().getAnnotation(Authorize.class);
         if (subject.hasPermission(authorize.value())) {
             return invocation.proceed();
         }

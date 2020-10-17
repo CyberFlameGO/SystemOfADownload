@@ -53,7 +53,7 @@ public class RESTRoutesV1 {
      * @param actions The {@link Actions} business layer
      */
     @Inject
-    public RESTRoutesV1(Actions actions) {
+    public RESTRoutesV1(final Actions actions) {
         this.actions = actions;
 
         Spark.path("/v1", () -> {
@@ -78,8 +78,8 @@ public class RESTRoutesV1 {
      * @param response The {@link Response}
      * @return The response.
      */
-    public Collection<BasicProject> getAllProjects(Request request, Response response) {
-        setCommonResponseParameters(response);
+    public Collection<BasicProject> getAllProjects(final Request request, final Response response) {
+        this.setCommonResponseParameters(response);
         return this.actions.getAllProjects().stream().map(this::translate).collect(Collectors.toList());
     }
 
@@ -90,9 +90,9 @@ public class RESTRoutesV1 {
      * @param response The {@link Response}
      * @return The response.
      */
-    public BasicProject getProject(Request request, Response response) {
-        setCommonResponseParameters(response);
-        return getProject(request)
+    public BasicProject getProject(final Request request, final Response response) {
+        this.setCommonResponseParameters(response);
+        return this.getProject(request)
                 .map(this::translate)
                 .orElseThrow(NotFoundException::new);
     }
@@ -105,9 +105,9 @@ public class RESTRoutesV1 {
      * @return The response.
      */
     // type=stable&version=5&minecraft=1.10.2&forge=13.19.0.2157&limit=100&until=&since=&changelog=
-    public Collection<Download> getProjectDownloads(Request request, Response response) {
-        setCommonResponseParameters(response);
-        var project = getProject(request).orElseThrow(NotFoundException::new);
+    public Collection<Download> getProjectDownloads(final Request request, final Response response) {
+        this.setCommonResponseParameters(response);
+        final var project = this.getProject(request).orElseThrow(NotFoundException::new);
         return this.actions.getDownloads(new DownloadableQuery(project.getId(), null, false)).stream()
                 .map(this::translate).collect(Collectors.toList());
     }
@@ -119,10 +119,10 @@ public class RESTRoutesV1 {
      * @param response The {@link Response}
      * @return The response.
      */
-    public Download getProjectDownloadVersion(Request request, Response response) {
-        setCommonResponseParameters(response);
-        var project = getProject(request).orElseThrow(NotFoundException::new);
-        var version = request.params(":version");
+    public Download getProjectDownloadVersion(final Request request, final Response response) {
+        this.setCommonResponseParameters(response);
+        final var project = this.getProject(request).orElseThrow(NotFoundException::new);
+        final var version = request.params(":version");
         return this.actions.getDownloads(new DownloadableQuery(project.getId(), version, false)).stream()
                 .map(this::translate).findFirst().orElseThrow(NotFoundException::new);
     }
@@ -136,21 +136,21 @@ public class RESTRoutesV1 {
      */
     // type=stable&version=5&minecraft=1.10.2&forge=13.19.0.2157
     // TODO: Implement properly
-    public Download getProjectDownloadRecommended(Request request, Response response) {
-        setCommonResponseParameters(response);
-        var project = getProject(request).orElseThrow(NotFoundException::new);
+    public Download getProjectDownloadRecommended(final Request request, final Response response) {
+        this.setCommonResponseParameters(response);
+        final var project = this.getProject(request).orElseThrow(NotFoundException::new);
         return this.actions.getDownloads(new DownloadableQuery(project.getId(), null, true)).stream()
                 .map(this::translate).findFirst().orElseThrow(NotFoundException::new);
     }
 
-    private void setCommonResponseParameters(Response response) {
+    private void setCommonResponseParameters(final Response response) {
         response.header("Content-Type", "application/json");
         response.status(200);
     }
 
-    private Optional<Project> getProject(Request request) {
-        var groupId = request.params(":groupId");
-        var artifactId = request.params(":artifactId");
+    private Optional<Project> getProject(final Request request) {
+        final var groupId = request.params(":groupId");
+        final var artifactId = request.params(":artifactId");
         return this.actions
                 .getAllProjects()
                 .stream()
@@ -158,11 +158,11 @@ public class RESTRoutesV1 {
                 .findFirst();
     }
 
-    private BasicProject translate(Project project) {
+    private BasicProject translate(final Project project) {
         return new BasicProject(project.getGroupId(), project.getArtifactId());
     }
 
-    private Download translate(Downloadable downloadable) {
+    private Download translate(final Downloadable downloadable) {
         return new Download(downloadable);
     }
 

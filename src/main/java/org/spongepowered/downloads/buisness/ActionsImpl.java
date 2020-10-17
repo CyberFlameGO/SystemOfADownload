@@ -41,32 +41,32 @@ public class ActionsImpl implements Actions {
     }
 
     @Override
-    public Optional<Project> getProject(String projectId) {
+    public Optional<Project> getProject(final String projectId) {
         return Optional.empty();
     }
 
     @Override
-    public Collection<Downloadable> getDownloads(DownloadableQuery downloadableQuery) {
+    public Collection<Downloadable> getDownloads(final DownloadableQuery downloadableQuery) {
         return null;
     }
 
     @Override
-    public Downloadable addDownload(Subject subject, String projectId, URL downloadLocation) {
+    public Downloadable addDownload(final Subject subject, final String projectId, final URL downloadLocation) {
         return null;
     }
 
     @Override
-    public void resyncWithMaven(Subject subject, String projectId) {
+    public void resyncWithMaven(final Subject subject, final String projectId) {
 
     }
 
     @Override
-    public void markBroken(Subject subject, String projectId, int downloadId, boolean isBroken) {
+    public void markBroken(final Subject subject, final String projectId, final int downloadId, final boolean isBroken) {
 
     }
 
     @Override
-    public void editChangelog(Subject subject, String projectId, int downloadId, String changelog) {
+    public void editChangelog(final Subject subject, final String projectId, final int downloadId, final String changelog) {
 
     }
 

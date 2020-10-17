@@ -25,6 +25,7 @@
 package org.spongepowered.downloads.database.dummyimpl;
 
 import com.google.common.collect.ImmutableList;
+import org.spongepowered.downloads.config.AppConfig;
 import org.spongepowered.downloads.database.DatabasePersistence;
 import org.spongepowered.downloads.pojo.data.Downloadable;
 import org.spongepowered.downloads.pojo.query.DownloadableQuery;
@@ -43,8 +44,16 @@ public class DummyDatabasePersistence implements DatabasePersistence {
      * @return An empty list
      */
     @Override
-    public List<Downloadable> getDownloadable(DownloadableQuery query) {
+    public List<Downloadable> getDownloadable(final DownloadableQuery query) {
         return ImmutableList.of();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createProduct(final AppConfig.Product product) {
+
     }
 
     /**
@@ -53,7 +62,28 @@ public class DummyDatabasePersistence implements DatabasePersistence {
      * @param downloadable The {@link Downloadable}
      */
     @Override
-    public void createDownloadable(Downloadable downloadable) {
+    public void createDownloadable(final Downloadable downloadable) {
+
+    }
+
+    /**
+     * No-op
+     *
+     * @param query The {@link DownloadableQuery} to use to select the build
+     */
+    @Override
+    public void markBroken(final DownloadableQuery query) {
+
+    }
+
+    /**
+     * No-op
+     *
+     * @param query The {@link DownloadableQuery} to use to select the build
+     * @param changelog The changelog
+     */
+    @Override
+    public void updateChangelog(final DownloadableQuery query, final String changelog) {
 
     }
 }

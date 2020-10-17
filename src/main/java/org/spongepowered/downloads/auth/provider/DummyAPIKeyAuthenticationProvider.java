@@ -31,7 +31,7 @@ import java.util.Optional;
 public class DummyAPIKeyAuthenticationProvider implements APIKeyAuthenticationProvider {
 
     @Override
-    public Optional<APISubject> validate(String token) {
+    public Optional<APISubject> validate(final String token) {
         return Optional.empty();
     }
 

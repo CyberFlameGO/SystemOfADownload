@@ -40,7 +40,7 @@ public class Project {
      * @param artifactId The artifact ID of the project
      * @param id The ID of the project
      */
-    public Project(String groupId, String artifactId, String id) {
+    public Project(final String groupId, final String artifactId, final String id) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.id = id;

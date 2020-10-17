@@ -26,6 +26,7 @@ package org.spongepowered.downloads.pojo.data;
 
 import java.net.URL;
 import java.time.ZonedDateTime;
+import java.util.Map;
 
 /**
  * Represents a download.
@@ -38,29 +39,33 @@ public class Downloadable {
     private final String changelog;
     private final String commit;
     private final ZonedDateTime zonedDateTime;
+    private final Map<String, String> hashes;
 
     /**
      * Constructs this data object.
-     *
-     * @param location The URL of the object
+     *  @param location The URL of the object
      * @param version The version of the object
      * @param author The author of the object
      * @param changelog The changelog associated with the object
      * @param commit The commit this object refers to
      * @param zonedDateTime The time the object was created
+     * @param hashes Checksum hashes
      */
-    public Downloadable(URL location,
-            String version,
-            String author,
-            String changelog,
-            String commit,
-            ZonedDateTime zonedDateTime) {
+    public Downloadable(
+            final URL location,
+            final String version,
+            final String author,
+            final String changelog,
+            final String commit,
+            final ZonedDateTime zonedDateTime,
+            final Map<String, String> hashes) {
         this.location = location;
         this.version = version;
         this.author = author;
         this.changelog = changelog;
         this.commit = commit;
         this.zonedDateTime = zonedDateTime;
+        this.hashes = hashes;
     }
 
     /**
@@ -117,4 +122,12 @@ public class Downloadable {
         return this.zonedDateTime;
     }
 
+    /**
+     * The hashes of this downloadable.
+     *
+     * @return The hashes
+     */
+    public Map<String, String> getHashes() {
+        return this.hashes;
+    }
 }

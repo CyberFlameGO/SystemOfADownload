@@ -44,8 +44,8 @@ public class HikariDatabaseConnectionPool implements DatabaseConnectionPool {
      *
      * @param databaseConfig The {@link AppConfig.Database}
      */
-    public HikariDatabaseConnectionPool(AppConfig.Database databaseConfig) {
-        var config = new HikariConfig();
+    public HikariDatabaseConnectionPool(final AppConfig.Database databaseConfig) {
+        final var config = new HikariConfig();
         config.setJdbcUrl(databaseConfig.getJdbcUrl());
         this.dataSource = new HikariDataSource(config);
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));

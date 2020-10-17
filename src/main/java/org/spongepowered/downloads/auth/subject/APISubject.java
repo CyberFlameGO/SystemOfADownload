@@ -36,7 +36,7 @@ public final class APISubject extends AbstractSubject {
      *
      * @param permissions The permission to grant this user.
      */
-    public APISubject(Collection<Permissions> permissions) {
+    public APISubject(final Collection<Permissions> permissions) {
         super(permissions);
     }
 

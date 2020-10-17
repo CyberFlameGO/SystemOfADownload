@@ -25,6 +25,7 @@
 package org.spongepowered.downloads.database.impl;
 
 import com.google.inject.Inject;
+import org.spongepowered.downloads.config.AppConfig;
 import org.spongepowered.downloads.database.DatabaseConnectionPool;
 import org.spongepowered.downloads.database.DatabasePersistence;
 import org.spongepowered.downloads.pojo.data.Downloadable;
@@ -45,7 +46,7 @@ public class PostgresDatabasePersistence implements DatabasePersistence {
      * @param connectionPool The {@link DatabaseConnectionPool}
      */
     @Inject
-    public PostgresDatabasePersistence(DatabaseConnectionPool connectionPool) {
+    public PostgresDatabasePersistence(final DatabaseConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 
@@ -53,7 +54,7 @@ public class PostgresDatabasePersistence implements DatabasePersistence {
      * {@inheritDoc}
      */
     @Override
-    public List<Downloadable> getDownloadable(DownloadableQuery query) {
+    public List<Downloadable> getDownloadable(final DownloadableQuery query) {
         return null;
     }
 
@@ -61,7 +62,31 @@ public class PostgresDatabasePersistence implements DatabasePersistence {
      * {@inheritDoc}
      */
     @Override
-    public void createDownloadable(Downloadable downloadable) {
+    public void createProduct(final AppConfig.Product product) {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createDownloadable(final Downloadable downloadable) {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void markBroken(final DownloadableQuery query) {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateChangelog(final DownloadableQuery query, final String changelog) {
 
     }
 }

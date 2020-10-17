@@ -44,11 +44,11 @@ public class DummyOAuthAuthenticationProvider implements OAuthAuthenticationProv
      * {@inheritDoc}
      */
     @Override
-    public AuthSubject authenticate(String token) throws AuthenticationFailedException {
-        var byteArray = new byte[32];
+    public AuthSubject authenticate(final String token) throws AuthenticationFailedException {
+        final var byteArray = new byte[32];
         new Random().nextBytes(byteArray);
         final StringBuilder builder = new StringBuilder();
-        for (var b : byteArray) {
+        for (final var b : byteArray) {
             builder.append(String.format("%02x", b));
         }
         this.token = new AuthSubject(
@@ -62,7 +62,7 @@ public class DummyOAuthAuthenticationProvider implements OAuthAuthenticationProv
      * {@inheritDoc}
      */
     @Override
-    public Optional<AuthSubject> refresh(String accessToken) {
+    public Optional<AuthSubject> refresh(final String accessToken) {
         if (this.isTokenValid(accessToken)) {
             return Optional.ofNullable(this.token);
         }
@@ -73,7 +73,7 @@ public class DummyOAuthAuthenticationProvider implements OAuthAuthenticationProv
      * {@inheritDoc}
      */
     @Override
-    public void destroyToken(String accessToken) {
+    public void destroyToken(final String accessToken) {
         if (this.isTokenValid(accessToken)) {
             this.token = null;
         }
@@ -83,7 +83,7 @@ public class DummyOAuthAuthenticationProvider implements OAuthAuthenticationProv
      * {@inheritDoc}
      */
     @Override
-    public boolean isTokenValid(String accessToken) {
+    public boolean isTokenValid(final String accessToken) {
         return this.token != null && this.token.getAccessToken().equals(accessToken);
     }
 

@@ -43,7 +43,7 @@ public class DownloadableQuery {
      * @param version The version, if a specific version is required
      * @param recommendedOnly If only recommended versions are to be returned
      */
-    public DownloadableQuery(String projectId, @Nullable String version, boolean recommendedOnly) {
+    public DownloadableQuery(final String projectId, @Nullable final String version, final boolean recommendedOnly) {
         this.projectId = projectId;
         this.version = version;
         this.recommendedOnly = recommendedOnly;

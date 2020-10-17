@@ -42,7 +42,7 @@ public class Changelog {
      * @param entries The changelog entries
      * @param submodules Any submodules
      */
-    public Changelog(List<Entry> entries, Map<String, Changelog> submodules) {
+    public Changelog(final List<Entry> entries, final Map<String, Changelog> submodules) {
         this.entries = entries;
         this.submodules = submodules;
     }
@@ -83,7 +83,7 @@ public class Changelog {
          * @param author The author
          * @param dateTime The commit time
          */
-        public Entry(String commit, String message, String author, ZonedDateTime dateTime) {
+        public Entry(final String commit, final String message, final String author, final ZonedDateTime dateTime) {
             this.commit = commit;
             this.message = message;
             this.author = author;

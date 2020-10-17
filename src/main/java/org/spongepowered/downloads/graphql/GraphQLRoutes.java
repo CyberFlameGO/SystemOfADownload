@@ -58,10 +58,10 @@ public class GraphQLRoutes {
      */
     @Inject
     public GraphQLRoutes(
-            Gson gson,
-            APIKeyAuthenticationProvider apiKeyAuthProvider,
-            OAuthAuthenticationProvider spongeAuthProvider,
-            Actions actions) {
+            final Gson gson,
+            final APIKeyAuthenticationProvider apiKeyAuthProvider,
+            final OAuthAuthenticationProvider spongeAuthProvider,
+            final Actions actions) {
         this.gson = gson;
         this.apiKeyAuthProvider = apiKeyAuthProvider;
         this.spongeAuthProvider = spongeAuthProvider;
@@ -77,7 +77,7 @@ public class GraphQLRoutes {
      * @param response The {@link Response}
      * @return The object to return
      */
-    public Object process(Request request, Response response) {
+    public Object process(final Request request, final Response response) {
         /**
         final var accessTokenHeader = request.headers(Constants.X_ACCESS_TOKEN_HEADER);
         final Optional<? extends Subject> subject;

@@ -36,7 +36,7 @@ public class Download {
      *
      * @param downloadable The {@link Downloadable} to translate
      */
-    public Download(Downloadable downloadable) {
+    public Download(final Downloadable downloadable) {
 
     }
 

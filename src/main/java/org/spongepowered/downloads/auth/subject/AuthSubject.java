@@ -41,7 +41,7 @@ public final class AuthSubject extends AbstractSubject {
      * @param accessToken The user's authorisation token
      * @param permissions The set of permissions they have
      */
-    public AuthSubject(String userid, String accessToken, Collection<Permissions> permissions) {
+    public AuthSubject(final String userid, final String accessToken, final Collection<Permissions> permissions) {
         super(permissions);
         this.userid = userid;
         this.accessToken = accessToken;

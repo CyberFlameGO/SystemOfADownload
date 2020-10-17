@@ -50,7 +50,7 @@ public class ChangelogGeneratorImpl implements ChangelogGenerator {
      * @param appConfig The config
      */
     @Inject
-    public ChangelogGeneratorImpl(AppConfig appConfig) {
+    public ChangelogGeneratorImpl(final AppConfig appConfig) {
         this.appConfig = appConfig;
     }
 
@@ -58,16 +58,16 @@ public class ChangelogGeneratorImpl implements ChangelogGenerator {
      * {@inheritDoc}
      */
     @Override
-    public Changelog getChangelogFor(String productid, String fromHash, String toHash) {
-        AppConfig.Product product = this.appConfig.getProduct(productid);
+    public Changelog getChangelogFor(final String productid, final String fromHash, final String toHash) {
+        final AppConfig.Product product = this.appConfig.getProduct(productid);
         if (product == null) {
             throw new IllegalArgumentException("The product " + productid + " does not exist.");
         }
-        return getChangelogFor(product, productid, fromHash, toHash);
+        return this.getChangelogFor(product, productid, fromHash, toHash);
     }
 
     private Changelog getChangelogFor(
-            AppConfig.Product product, String productid, String fromHash, String toHash) {
+            final AppConfig.Product product, final String productid, final String fromHash, final String toHash) {
         final Path productRepo = this.appConfig.getRepoCacheDirectory().resolve(productid);
         final Git gitRepo;
         try {
@@ -82,13 +82,13 @@ public class ChangelogGeneratorImpl implements ChangelogGenerator {
                 gitRepo = Git.open(productRepo.toFile());
                 gitRepo.fetch().call();
             }
-            var fromCommit = ObjectId.fromString(fromHash);
-            var toCommit = ObjectId.fromString(toHash);
-            var logCommits = gitRepo.log().addRange(fromCommit, toCommit).call();
+            final var fromCommit = ObjectId.fromString(fromHash);
+            final var toCommit = ObjectId.fromString(toHash);
+            final var logCommits = gitRepo.log().addRange(fromCommit, toCommit).call();
             // TODO: Submodules
-            ImmutableList.Builder<Changelog.Entry> entries = ImmutableList.builder();
-            for (var commit : logCommits) {
-                PersonIdent ident = commit.getAuthorIdent();
+            final ImmutableList.Builder<Changelog.Entry> entries = ImmutableList.builder();
+            for (final var commit : logCommits) {
+                final PersonIdent ident = commit.getAuthorIdent();
                 entries.add(new Changelog.Entry(
                         commit.toObjectId().toString(),
                         commit.getFullMessage(),
@@ -97,7 +97,7 @@ public class ChangelogGeneratorImpl implements ChangelogGenerator {
                 ));
             }
             return new Changelog(entries.build(), ImmutableMap.of());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IllegalStateException("Could not get changelog.", e);
         }
     }

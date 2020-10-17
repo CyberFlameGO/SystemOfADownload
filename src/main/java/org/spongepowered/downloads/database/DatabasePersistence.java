@@ -24,6 +24,7 @@
  */
 package org.spongepowered.downloads.database;
 
+import org.spongepowered.downloads.config.AppConfig;
 import org.spongepowered.downloads.pojo.data.Downloadable;
 import org.spongepowered.downloads.pojo.query.DownloadableQuery;
 
@@ -43,10 +44,32 @@ public interface DatabasePersistence {
     List<Downloadable> getDownloadable(DownloadableQuery query);
 
     /**
+     * Creates a product in the database.
+     *
+     * @param product The product
+     */
+    void createProduct(AppConfig.Product product);
+
+    /**
      * Creates a {@link Downloadable} in the database.
      *
      * @param downloadable The {@link Downloadable}
      */
     void createDownloadable(Downloadable downloadable);
+
+    /**
+     * Marks a {@link Downloadable} as broken
+     *
+     * @param query The {@link DownloadableQuery} to use to select the build
+     */
+    void markBroken(DownloadableQuery query);
+
+    /**
+     * Updates a changelog associated with a {@link Downloadable}
+     *
+     * @param query The {@link DownloadableQuery} to use to select the build
+     * @param changelog The changelog
+     */
+    void updateChangelog(DownloadableQuery query, String changelog);
 
 }

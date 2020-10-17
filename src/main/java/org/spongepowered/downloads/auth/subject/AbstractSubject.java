@@ -39,7 +39,7 @@ public abstract class AbstractSubject implements Subject {
      *
      * @param permissions The permissions for this subject
      */
-    public AbstractSubject(Collection<Permissions> permissions) {
+    public AbstractSubject(final Collection<Permissions> permissions) {
         this.permissions = EnumSet.copyOf(permissions);
     }
 
@@ -61,8 +61,8 @@ public abstract class AbstractSubject implements Subject {
      * @return true if all permissions are granted.
      */
     @Override
-    public boolean hasPermission(Permissions[] permissions) {
-        for (Permissions permission : permissions) {
+    public boolean hasPermission(final Permissions[] permissions) {
+        for (final Permissions permission : permissions) {
              if (!this.permissions.contains(permission)) {
                  return false;
              }

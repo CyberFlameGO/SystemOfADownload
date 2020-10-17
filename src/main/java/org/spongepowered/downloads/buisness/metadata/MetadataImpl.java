@@ -48,7 +48,7 @@ public class MetadataImpl implements Metadata {
      * @param persistence The persistence layer to draw from
      */
     @Inject
-    public MetadataImpl(AppConfig appConfig, DatabasePersistence persistence) {
+    public MetadataImpl(final AppConfig appConfig, final DatabasePersistence persistence) {
         this.appConfig = appConfig;
         this.persistence = persistence;
     }
@@ -65,7 +65,7 @@ public class MetadataImpl implements Metadata {
      * {@inheritDoc}
      */
     @Override
-    public List<Downloadable> retrieve(DownloadableQuery query) {
+    public List<Downloadable> retrieve(final DownloadableQuery query) {
         return ImmutableList.of();
     }
 

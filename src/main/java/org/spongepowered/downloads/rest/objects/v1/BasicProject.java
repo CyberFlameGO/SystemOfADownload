@@ -38,7 +38,7 @@ public class BasicProject {
      * @param groupId The group ID of the project
      * @param artifactId The artifact ID of the project
      */
-    public BasicProject(String groupId, String artifactId) {
+    public BasicProject(final String groupId, final String artifactId) {
         this.groupId = groupId;
         this.artifactId = artifactId;
     }

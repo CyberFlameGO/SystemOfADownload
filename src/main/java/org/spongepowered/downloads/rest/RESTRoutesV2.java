@@ -42,7 +42,7 @@ public class RESTRoutesV2 {
      * @param actions The {@link Actions}
      */
     @Inject
-    public RESTRoutesV2(Actions actions) {
+    public RESTRoutesV2(final Actions actions) {
         this.actions = actions;
         Spark.path("/v2", () -> {
             
