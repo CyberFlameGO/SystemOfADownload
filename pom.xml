@@ -115,6 +115,21 @@
                 <artifactId>pac4j-jwt</artifactId>
                 <version>${pac4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-parent</artifactId>
+                <version>${datastax.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-mapping</artifactId>
+                <version>${datastax.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-core</artifactId>
+                <version>${datastax.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -128,5 +143,6 @@
         <pac4j.version>3.7</pac4j.version>
         <lagom.pac4j.version>2.1.0</lagom.pac4j.version>
         <vavr.version>0.10.3</vavr.version>
+        <datastax.version>3.7.2</datastax.version>
     </properties>
 </project>

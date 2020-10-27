@@ -1,21 +1,26 @@
 package org.spongepowered.downloads.artifact;
 
 import akka.NotUsed;
+import akka.persistence.cassandra.session.javadsl.CassandraSession;
 import com.google.inject.Inject;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
+import com.lightbend.lagom.javadsl.persistence.ReadSide;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.spongepowered.downloads.artifact.api.ArtifactService;
 import org.spongepowered.downloads.artifact.api.query.ArtifactRegistration;
 import org.spongepowered.downloads.artifact.api.query.GetArtifactsResponse;
+import org.spongepowered.downloads.artifact.api.query.GetVersionResponse;
 import org.spongepowered.downloads.artifact.api.query.GetVersionsResponse;
 import org.spongepowered.downloads.artifact.api.query.GroupRegistration;
 import org.spongepowered.downloads.artifact.api.query.GroupResponse;
 import org.spongepowered.downloads.artifact.collection.ArtifactCollectionEntity;
 import org.spongepowered.downloads.artifact.group.GroupEntity;
+import org.spongepowered.downloads.artifact.readside.ArtifactCollectionReadSideProcessor;
+import org.spongepowered.downloads.artifact.readside.ArtifactCollectionReadSideQuery;
 
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
@@ -24,10 +29,13 @@ public class ArtifactServiceImpl implements ArtifactService {
 
     private static final Logger LOGGER = LogManager.getLogger(ArtifactServiceImpl.class);
     private final PersistentEntityRegistry registry;
+    private final ArtifactCollectionReadSideQuery readSideQuery;
 
     @Inject
-    public ArtifactServiceImpl(final PersistentEntityRegistry registry) {
+    public ArtifactServiceImpl(final PersistentEntityRegistry registry, final ReadSide readSide, final ArtifactCollectionReadSideQuery readSideQuery) {
         this.registry = registry;
+        this.readSideQuery = readSideQuery;
+        readSide.register(ArtifactCollectionReadSideProcessor.class);
     }
 
     @Override
@@ -48,6 +56,17 @@ public class ArtifactServiceImpl implements ArtifactService {
             LOGGER.log(Level.DEBUG, String.format("Requesting versions for artifact: %s:%s", groupId, artifactId));
             return this.getCollection(groupId + ":" + artifactId)
                 .ask(new ArtifactCollectionEntity.Command.GetVersions(groupId, artifactId));
+        };
+    }
+
+    public ServiceCall<NotUsed, GetVersionResponse> getArtifactVersion(
+            final String groupId,
+            final String artifactId,
+            final String artifactVersion
+    ) {
+        return notUsed -> {
+            LOGGER.log(Level.DEBUG, String.format("Requesting version %s for artifact: %s:%s", artifactVersion, groupId, artifactId));
+            return this.readSideQuery.getVersion(groupId, artifactId, artifactVersion);
         };
     }
 

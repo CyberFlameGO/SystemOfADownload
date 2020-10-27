@@ -3,6 +3,7 @@ package org.spongepowered.downloads.artifact.collection;
 import akka.Done;
 import akka.NotUsed;
 import com.lightbend.lagom.javadsl.persistence.AggregateEvent;
+import com.lightbend.lagom.javadsl.persistence.AggregateEventShards;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTagger;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
@@ -18,7 +19,7 @@ import java.util.Optional;
 public final class ArtifactCollectionEntity extends PersistentEntity<ArtifactCollectionEntity.Command, ArtifactCollectionEntity.Event, ArtifactCollectionEntity.State> {
 
     public sealed interface Event extends Jsonable, AggregateEvent<Event> {
-        AggregateEventTag<Event> INSTANCE = AggregateEventTag.of(Event.class);
+        AggregateEventShards<Event> INSTANCE = AggregateEventTag.sharded(Event.class, 10);
 
         @Override
         default AggregateEventTagger<Event> aggregateTag() {
@@ -55,7 +56,6 @@ public final class ArtifactCollectionEntity extends PersistentEntity<ArtifactCol
         }
     }
 
-
     @Override
     public Behavior initialBehavior(
         final Optional<State> snapshotState
@@ -84,6 +84,8 @@ public final class ArtifactCollectionEntity extends PersistentEntity<ArtifactCol
         if (!this.state().collection.containsKey(version)) {
             ctx.thenPersist(new Event.ArtifactVersionRegistered(version, cmd.collection()));
         }
+        // used to ensure that the collection is sent to the read handler.
+        ctx.thenPersist(new Event.CollectionRegistered(cmd.collection()));
         return ctx.done();
     }
 

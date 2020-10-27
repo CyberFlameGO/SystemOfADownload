@@ -2,6 +2,7 @@ package org.spongepowered.downloads.git;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.persistence.AggregateEvent;
+import com.lightbend.lagom.javadsl.persistence.AggregateEventShards;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTagger;
 import com.lightbend.lagom.serialization.Jsonable;
@@ -11,7 +12,7 @@ import org.spongepowered.downloads.git.api.Repository;
 public sealed interface CommitEvent extends Jsonable, AggregateEvent<CommitEvent>
     permits CommitEvent.CommitCreated, CommitEvent.GitRepoRegistered {
 
-    AggregateEventTag<CommitEvent> INSTANCE = AggregateEventTag.of(CommitEvent.class);
+    AggregateEventShards<CommitEvent> INSTANCE = AggregateEventTag.sharded(CommitEvent.class, 10);
 
     @Override
     default AggregateEventTagger<CommitEvent> aggregateTag() {
