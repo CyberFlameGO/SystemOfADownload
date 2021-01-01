@@ -5,12 +5,13 @@ import com.google.inject.Inject;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
+import com.lightbend.lagom.javadsl.server.HeaderServiceCall;
+import com.lightbend.lagom.javadsl.server.ServerServiceCall;
 import io.vavr.collection.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.pac4j.core.config.Config;
-import org.pac4j.lagom.javadsl.SecuredService;
+import org.pac4j.core.profile.CommonProfile;
 import org.spongepowered.downloads.artifact.api.ArtifactService;
 import org.spongepowered.downloads.artifact.api.query.ArtifactRegistration;
 import org.spongepowered.downloads.artifact.api.query.GetArtifactsResponse;
@@ -22,28 +23,26 @@ import org.spongepowered.downloads.artifact.collection.ArtifactCollectionEntity;
 import org.spongepowered.downloads.artifact.collection.TaggedVersionEntity;
 import org.spongepowered.downloads.artifact.group.GroupEntity;
 import org.spongepowered.downloads.auth.api.AuthService;
-import org.spongepowered.downloads.auth.api.SOADAuth;
 import org.taymyr.lagom.javadsl.openapi.AbstractOpenAPIService;
 
 import java.util.Locale;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
-public class ArtifactServiceImpl extends AbstractOpenAPIService implements ArtifactService, SecuredService {
+public class ArtifactServiceImpl extends AbstractOpenAPIService implements ArtifactService {
 
     private static final Logger LOGGER = LogManager.getLogger(ArtifactServiceImpl.class);
     private final PersistentEntityRegistry registry;
-    private final Config securityConfig;
     private final AuthService auth;
 
     @Inject
-    public ArtifactServiceImpl(final PersistentEntityRegistry registry, final AuthService auth, @SOADAuth final Config securityConfig) {
+    public ArtifactServiceImpl(final PersistentEntityRegistry registry, final AuthService auth) {
         this.registry = registry;
         this.registry.register(GroupEntity.class);
         this.registry.register(ArtifactCollectionEntity.class);
         this.registry.register(TaggedVersionEntity.class);
         this.auth = auth;
-        this.securityConfig = securityConfig;
     }
 
     @Override
@@ -92,7 +91,8 @@ public class ArtifactServiceImpl extends AbstractOpenAPIService implements Artif
 
     @Override
     public ServiceCall<GroupRegistration.RegisterGroupRequest, GroupRegistration.Response> registerGroup() {
-        return this.authorize(AuthService.Providers.JWT, AuthService.Roles.ADMIN, profile -> {
+        this.auth.validate(AuthService.Providers.JWT, AuthService.Roles.ADMIN).invoke().toCompletableFuture().join(); // This kind of works...
+        // return this.withAuthorization(AuthService.Providers.JWT, AuthService.Roles.ADMIN, profile -> { // this does not?
             return registration -> {
                 final String mavenCoordinates = registration.groupCoordinates();
                 final String name = registration.groupName();
@@ -100,37 +100,37 @@ public class ArtifactServiceImpl extends AbstractOpenAPIService implements Artif
                 return this.getGroupEntity(registration.groupName().toLowerCase(Locale.ROOT))
                         .ask(new GroupEntity.GroupCommand.RegisterGroup(mavenCoordinates, name, website));
             };
-        });
+//        });
     }
 
     @Override
     public ServiceCall<ArtifactRegistration.RegisterCollection, ArtifactRegistration.Response> registerArtifacts(String groupId) {
-        return this.authorize(AuthService.Providers.JWT, AuthService.Roles.ADMIN, profile -> {
-            return registration -> {
-                final String mavenCoordinates = registration.collection().getMavenCoordinates();
-                final StringJoiner joiner = new StringJoiner(",", "[", "]");
-                registration.collection().getArtifactComponents().keySet().map(joiner::add);
-                LOGGER.log(
-                        Level.DEBUG,
-                        String.format("Requesting registration of collection %s with artifacts: %s", mavenCoordinates, joiner)
-                );
-                final String group = registration.collection().getGroup().getGroupCoordinates();
-                final String artifactId = registration.collection().getArtifactId();
-                return this.getGroupEntity(group)
-                        .ask(new GroupEntity.GroupCommand.RegisterArtifact(artifactId))
-                        .thenCompose(response -> {
-                            if (response instanceof ArtifactRegistration.Response.GroupMissing) {
-                                return CompletableFuture.completedFuture(response);
-                            }
-                            if (response instanceof ArtifactRegistration.Response.ArtifactAlreadyRegistered) {
-                                return CompletableFuture.completedFuture(response);
-                            }
-                            return this.getCollection(group + ":" + artifactId)
-                                    .ask(new ArtifactCollectionEntity.Command.RegisterCollection(registration.collection()))
-                                    .thenApply(
-                                            notUsed -> new ArtifactRegistration.Response.RegisteredArtifact(registration.collection()));
-                        });
-            };
+        return this.withAuthorization(AuthService.Providers.JWT, AuthService.Roles.ADMIN, profile -> {
+                    return registration -> {
+                        final String mavenCoordinates = registration.collection().getMavenCoordinates();
+                        final StringJoiner joiner = new StringJoiner(",", "[", "]");
+                        registration.collection().getArtifactComponents().keySet().map(joiner::add);
+                        LOGGER.log(
+                                Level.DEBUG,
+                                String.format("Requesting registration of collection %s with artifacts: %s", mavenCoordinates, joiner)
+                        );
+                        final String group = registration.collection().getGroup().getGroupCoordinates();
+                        final String artifactId = registration.collection().getArtifactId();
+                        return this.getGroupEntity(group)
+                                .ask(new GroupEntity.GroupCommand.RegisterArtifact(artifactId))
+                                .thenCompose(response -> {
+                                    if (response instanceof ArtifactRegistration.Response.GroupMissing) {
+                                        return CompletableFuture.completedFuture(response);
+                                    }
+                                    if (response instanceof ArtifactRegistration.Response.ArtifactAlreadyRegistered) {
+                                        return CompletableFuture.completedFuture(response);
+                                    }
+                                    return this.getCollection(group + ":" + artifactId)
+                                            .ask(new ArtifactCollectionEntity.Command.RegisterCollection(registration.collection()))
+                                            .thenApply(
+                                                    notUsed -> new ArtifactRegistration.Response.RegisteredArtifact(registration.collection()));
+                                });
+                    };
         });
     }
 
@@ -145,7 +145,7 @@ public class ArtifactServiceImpl extends AbstractOpenAPIService implements Artif
 
     @Override
     public ServiceCall<NotUsed, NotUsed> registerTaggedVersion(final String groupAndArtifactId, final String pomVersion) {
-        return this.authorize(AuthService.Providers.JWT, AuthService.Roles.ADMIN, profile -> {
+        return this.withAuthorization(AuthService.Providers.JWT, AuthService.Roles.ADMIN, profile -> {
             return notUsed -> {
                 LOGGER.log(Level.DEBUG, String.format("Registering Tagged version: %s with maven artifact %s", pomVersion, groupAndArtifactId));
                 final List<String> versions;
@@ -168,6 +168,11 @@ public class ArtifactServiceImpl extends AbstractOpenAPIService implements Artif
         });
     }
 
+    private <Request, Response> ServerServiceCall<Request, Response> withAuthorization(final String type, final String role,
+            final Function<CommonProfile, ServerServiceCall<Request, Response>> call) {
+        return HeaderServiceCall.composeAsync(request -> this.auth.validate(type, role).invoke().thenApply(call));
+    }
+
     private PersistentEntityRef<GroupEntity.GroupCommand> getGroupEntity(final String groupId) {
         return this.registry.refFor(GroupEntity.class, groupId);
     }
@@ -180,11 +185,6 @@ public class ArtifactServiceImpl extends AbstractOpenAPIService implements Artif
         final String mavenGroupAndArtifact, final String tagValue
     ) {
         return this.registry.refFor(TaggedVersionEntity.class, mavenGroupAndArtifact + "_" + tagValue);
-    }
-
-    @Override
-    public Config getSecurityConfig() {
-        return this.securityConfig;
     }
 
 }

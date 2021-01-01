@@ -3,6 +3,7 @@ package org.spongepowered.downloads.auth;
 import akka.NotUsed;
 import com.google.inject.Inject;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.server.ServerServiceCall;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jwt.profile.JwtGenerator;
@@ -16,6 +17,7 @@ import java.sql.Date;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public final class AuthServiceImpl extends AbstractOpenAPIService implements AuthService, SecuredService {
 
@@ -41,6 +43,12 @@ public final class AuthServiceImpl extends AbstractOpenAPIService implements Aut
         // TODO - if it's even possible
         return notUsed -> CompletableFuture.completedFuture(NotUsed.getInstance());
     }
+
+    @Override
+    public ServiceCall<NotUsed, CommonProfile> validate(final String type, final String role) {
+        return this.authorize(type, role, profile -> notUsed -> CompletableFuture.completedFuture(profile));
+    }
+
 
     @Override
     public Config getSecurityConfig() {

@@ -17,6 +17,10 @@
             <artifactId>lagom-javadsl-api_${scala.binary.version}</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.lightbend.lagom</groupId>
+            <artifactId>lagom-javadsl-server_${scala.binary.version}</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.pac4j</groupId>
             <artifactId>lagom-pac4j_2.13</artifactId>
             <version>${lagom.pac4j.version}</version>
